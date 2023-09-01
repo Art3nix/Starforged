@@ -5,23 +5,14 @@ using System;
 
 namespace Starforged {
 
-    public enum Direction {
-        Up = 0,
-        Right = 1,
-        Down = 2,
-        Left = 3,
-    }
-
     /// <summary>
     /// A class representing a ship
     /// </summary>
-    public class Ship {
-        private Texture2D texture;
-        private int speed = 150;
-        private int size = 48;
-
-        private double animationTimer;
-        private short animationFrame = 1;
+    public class Asteroid {
+        private Texture2D[] texture;
+        private int textureIndex;
+        private int speed = 75;
+        private int size = 16;
 
         /// <summary>
         /// Flying direction of the ship
@@ -33,12 +24,15 @@ namespace Starforged {
         /// </summary>
         public Vector2 Position;
 
-        public Ship () {
+        public Asteroid (int textureIndex) {
             // Choose random direction
             Direction = getRandomDirection();
 
             // Choose random position based on the direction
             Position = getRandomPosition(Direction);
+
+            this.textureIndex = textureIndex % 4; //prevent index out of bounds
+
         }
 
         /// <summary>
@@ -46,7 +40,13 @@ namespace Starforged {
         /// </summary>
         /// <param name="content">The ContentManager to load with</param>
         public void LoadContent(ContentManager content) {
-            texture = content.Load<Texture2D>("ships/ship1");
+            //TODO put all asteroids into one file
+            texture = new Texture2D[] {
+                content.Load<Texture2D>("asteroids/asteroid1_s"),
+                content.Load<Texture2D>("asteroids/asteroid2_s"),
+                content.Load<Texture2D>("asteroids/asteroid3_s"),
+                content.Load<Texture2D>("asteroids/asteroid4_s"),
+            };
         }
 
         /// <summary>
@@ -95,20 +95,8 @@ namespace Starforged {
         /// <param name="spriteBatch">The SpriteBatch to render with</param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
 
-            //Update animation timer
-            animationTimer += gameTime.ElapsedGameTime.TotalSeconds;
-
-            //Update animation frame
-            if (animationTimer > 0.1) {
-                animationFrame++;
-                if (animationFrame > 3) animationFrame = 1;
-                animationTimer -= 0.1;
-
-            }
-
             //Draw the sprite
-            var source = new Rectangle(animationFrame * size, (int)Direction * size, size, size);
-            spriteBatch.Draw(texture, Position, source, Color.White);
+            spriteBatch.Draw(texture[textureIndex], Position, Color.White);
         }
 
         /// <summary>

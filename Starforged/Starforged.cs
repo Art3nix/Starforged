@@ -17,6 +17,9 @@ namespace Starforged {
         // Ships
         private Ship[] ships;
 
+        // Asteroids
+        private Asteroid[] asteroids;
+
         /// <summary>
         /// Get size of the window
         /// </summary>
@@ -52,6 +55,14 @@ namespace Starforged {
                 new Ship()
             };
 
+            // Initialize asteroids
+            asteroids = new Asteroid[] {
+                new Asteroid(1),
+                new Asteroid(2),
+                new Asteroid(3),
+                new Asteroid(4)
+            };
+
             base.Initialize();
 
         }
@@ -72,12 +83,15 @@ namespace Starforged {
             // Load ships
             foreach (var ship in ships) ship.LoadContent(Content);
 
+            // Load asteroids
+            foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
+
         }
 
         /// <summary>
         /// Updates the game
         /// </summary>
-        /// <param name="gameTime"></param>
+        /// <param name="gameTime">The gametime</param>
         protected override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -85,13 +99,16 @@ namespace Starforged {
             // Update ships
             foreach (var ship in ships) ship.Update(gameTime);
 
+            // Update asteroids
+            foreach (var asteroid in asteroids) asteroid.Update(gameTime);
+
             base.Update(gameTime);
         }
 
         /// <summary>
         /// Draws the game
         /// </summary>
-        /// <param name="gameTime">The GameTime</param>
+        /// <param name="gameTime">The game time</param>
         protected override void Draw(GameTime gameTime) {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
@@ -99,6 +116,9 @@ namespace Starforged {
 
             // Draw background
             background.Draw(spriteBatch);
+
+            // Draw asteroids
+            foreach (var asteroid in asteroids) asteroid.Draw(gameTime, spriteBatch);
 
             // Draw ships
             foreach (var ship in ships) ship.Draw(gameTime, spriteBatch);
