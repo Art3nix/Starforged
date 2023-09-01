@@ -1,3 +1,3 @@
 ﻿
-using var game = new Starforged.Game1();
+using var game = new Starforged.Starforged();
 game.Run();
