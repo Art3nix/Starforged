@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Starforged {
     public class Starforged : Game {
@@ -56,12 +57,11 @@ namespace Starforged {
             };
 
             // Initialize asteroids
-            asteroids = new Asteroid[] {
-                new Asteroid(1),
-                new Asteroid(2),
-                new Asteroid(3),
-                new Asteroid(4)
-            };
+            Random r = new Random();
+            asteroids = new Asteroid[12];
+            for(var i = 0; i < asteroids.Length; i++) {
+                asteroids[i] = new Asteroid(r.Next(4));
+            }
 
             base.Initialize();
 

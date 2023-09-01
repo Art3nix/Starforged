@@ -17,7 +17,7 @@ namespace Starforged {
         /// <summary>
         /// Flying direction of the ship
         /// </summary>
-        public Direction Direction;
+        public Vector2 Direction;
 
         /// <summary>
         /// Position of the ship
@@ -25,11 +25,13 @@ namespace Starforged {
         public Vector2 Position;
 
         public Asteroid (int textureIndex) {
-            // Choose random direction
-            Direction = getRandomDirection();
+            // Choose random position
+            Position = getRandomPosition();
 
-            // Choose random position based on the direction
-            Position = getRandomPosition(Direction);
+
+            // Choose random direction based on the spawn position
+            Direction = getRandomDirection(Position);
+
 
             this.textureIndex = textureIndex % 4; //prevent index out of bounds
 
@@ -58,32 +60,18 @@ namespace Starforged {
             var windowHeight = Starforged.gDevice.Viewport.Height;
 
             //Move in the correct direction
-            switch (Direction) {
-                case Direction.Down:
-                    Position += new Vector2(0, 1) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    break;
-                case Direction.Right:
-                    Position += new Vector2(1, 0) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    break;
-                case Direction.Up:
-                    Position += new Vector2(0, -1) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    break;
-                case Direction.Left:
-                    Position += new Vector2(-1, 0) * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-                    break;
-
-            }
+            Position += Direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 
             // Return ship back to the screen
-            if ((Position.X < -size && Direction == Direction.Left) ||
-                (Position.Y < -size && Direction == Direction.Up) ||
-                (Position.X > windowWidth + size && Direction == Direction.Right) ||
-                (Position.Y > windowHeight + size && Direction == Direction.Down)) {
+            if ((Position.X < -size && Direction.X < 0) ||
+                (Position.Y < -size && Direction.Y < 0) ||
+                (Position.X > windowWidth + size && Direction.X > 0) ||
+                (Position.Y > windowHeight + size && Direction.Y > 0)) {
 
-                Direction = getRandomDirection();
-                Position = getRandomPosition(Direction);
-
+                Position = getRandomPosition();
+                Direction = getRandomDirection(Position);
+               
             }
 
         }
@@ -103,34 +91,35 @@ namespace Starforged {
         /// Choose random direction
         /// </summary>
         /// <returns></returns>
-        private Direction getRandomDirection() {
-            var vals = Enum.GetValues(typeof(Direction));
+        private Vector2 getRandomDirection(Vector2 pos) {
             Random r = new Random();
-            return (Direction)vals.GetValue(r.Next(vals.Length));
+
+            var screenWidth = Starforged.gDevice.Viewport.Width;
+            var screenHeight = Starforged.gDevice.Viewport.Height;
+            var offsetX = screenWidth / 4;
+            var offsetY = screenHeight / 4;
+
+            Vector2 targetPos = new Vector2(r.Next(offsetX, screenWidth - offsetX), r.Next(offsetY, screenHeight - offsetY));
+            Vector2 dir = targetPos - pos;
+            dir = Vector2.Normalize(dir);
+
+            return dir;
         }
 
-        private Vector2 getRandomPosition(Direction dir) {
+        private Vector2 getRandomPosition() {
             Random r = new Random();
 
-            var maxX = Starforged.gDevice.Viewport.Width - size;
-            var maxY = Starforged.gDevice.Viewport.Height - size;
+            var screenWidth = Starforged.gDevice.Viewport.Width;
+            var screenHeight = Starforged.gDevice.Viewport.Height;
 
-            var Position = new Vector2(r.Next(maxX), r.Next(maxY));
+            var Position = new Vector2(r.Next(-screenWidth, screenWidth), r.Next(-screenHeight, screenHeight));
 
-            switch (dir) {
-                case Direction.Left:
-                    Position.X += maxX;
-                    break;
-                case Direction.Right:
-                    Position.X -= maxX;
-                    break;
-                case Direction.Up:
-                    Position.Y += maxY;
-                    break;
-                case Direction.Down:
-                    Position.Y -= maxY;
-                    break;
-            }
+            // Move spawn position out of viewport
+            if (Position.X > 0) Position.X += screenWidth;
+            else Position.X -= size;
+
+            if (Position.Y > 0) Position.Y += screenHeight;
+            else Position.Y -= size;
 
             return Position;
         }
