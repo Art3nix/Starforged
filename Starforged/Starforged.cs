@@ -3,13 +3,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 
-namespace Starforged {
+namespace Starforged
+{
     public class Starforged : Game {
         private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
 
         // Background
-        private FixedBackground background;
+        private Background background;
 
         // Fonts
         private SpriteFont titleFont;
@@ -32,8 +33,8 @@ namespace Starforged {
         /// </summary>
         public Starforged() {
             graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 700;
-            graphics.PreferredBackBufferHeight = 700;
+            graphics.PreferredBackBufferWidth = 1800;
+            graphics.PreferredBackBufferHeight = 1000;
             graphics.ApplyChanges();
             gDevice = GraphicsDevice;
             Content.RootDirectory = "Content";
@@ -46,7 +47,7 @@ namespace Starforged {
         protected override void Initialize() {
 
             // Initialize background
-            background = new FixedBackground();
+            background = new TiledBackground(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
             // Initialize ships
             ships = new Ship[] {
@@ -74,7 +75,7 @@ namespace Starforged {
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Load background
-            background.LoadContent(Content);
+            background.LoadContent(Content, "background/space_tile");
 
             // Load font
             titleFont = Content.Load<SpriteFont>("title");
