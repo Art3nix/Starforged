@@ -17,7 +17,7 @@ namespace Starforged
         private SpriteFont textFont;
 
         // Ships
-        private Ship[] ships;
+        private TitleScreenShip[] ships;
 
         // Asteroids
         private Asteroid[] asteroids;
@@ -50,11 +50,11 @@ namespace Starforged
             background = new TiledBackground(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
             // Initialize ships
-            ships = new Ship[] {
-                new Ship(),
-                new Ship(),
-                new Ship(),
-                new Ship()
+            ships = new TitleScreenShip[] {
+                new TitleScreenShip(),
+                new TitleScreenShip(),
+                new TitleScreenShip(),
+                new TitleScreenShip()
             };
 
             // Initialize asteroids
@@ -119,7 +119,11 @@ namespace Starforged
             background.Draw(spriteBatch);
 
             // Draw asteroids
-            foreach (var asteroid in asteroids) asteroid.Draw(gameTime, spriteBatch);
+            //foreach (var asteroid in asteroids) asteroid.Draw(gameTime, spriteBatch);
+            asteroids[0].Draw(gameTime, spriteBatch, 1f);
+            asteroids[1].Draw(gameTime, spriteBatch, 2f);
+            asteroids[2].Draw(gameTime, spriteBatch, 4f);
+            asteroids[3].Draw(gameTime, spriteBatch, 8f);
 
             // Draw ships
             foreach (var ship in ships) ship.Draw(gameTime, spriteBatch);

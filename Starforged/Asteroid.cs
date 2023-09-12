@@ -81,10 +81,12 @@ namespace Starforged {
         /// </summary>
         /// <param name="gameTime">The game time</param>
         /// <param name="spriteBatch">The SpriteBatch to render with</param>
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, float scale = 1f) {
 
             //Draw the sprite
-            spriteBatch.Draw(texture[textureIndex], Position, Color.White);
+            //spriteBatch.Draw(texture[textureIndex], Position, Color.White);
+            spriteBatch.Draw(texture[textureIndex], Position,
+                new Rectangle(0, 0, texture[textureIndex].Width, texture[textureIndex].Height),Color.White, 0f, new Vector2(0,0), scale, SpriteEffects.None, 0);
         }
 
         /// <summary>
