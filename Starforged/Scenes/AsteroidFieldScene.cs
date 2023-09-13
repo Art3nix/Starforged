@@ -16,15 +16,13 @@ namespace Starforged {
         // Asteroids
         private Asteroid[] asteroids;
 
-        private Texture2D ball;
-
 
         /// <summary>
         /// Constructs the game
         /// </summary>
         public AsteroidFieldScene(Starforged g) : base(g) {
-            game.gGraphicsMgr.PreferredBackBufferWidth = 500;
-            game.gGraphicsMgr.PreferredBackBufferHeight = 500;
+            game.gGraphicsMgr.PreferredBackBufferWidth = 1800;
+            game.gGraphicsMgr.PreferredBackBufferHeight = 1000;
             game.gGraphicsMgr.ApplyChanges();
         }
 
@@ -41,9 +39,9 @@ namespace Starforged {
 
             // Initialize asteroids
             Random r = new Random();
-            asteroids = new Asteroid[12];
+            asteroids = new Asteroid[40];
             for (var i = 0; i < asteroids.Length; i++) {
-                asteroids[i] = new Asteroid(r.Next(4), r.Next(2));
+                asteroids[i] = new Asteroid(r.Next(4), r.Next(3));
             }
 
             base.Initialize();
@@ -65,9 +63,6 @@ namespace Starforged {
 
             // Load asteroids
             foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
-
-
-            ball = Content.Load<Texture2D>("asteroids/ball");
 
 
         }
@@ -109,19 +104,7 @@ namespace Starforged {
             // Draw asteroids
             foreach (var asteroid in asteroids) {
                 asteroid.Draw(gameTime, spriteBatch);
-
-
-                var rect = new Rectangle((int)(asteroid.Bounds.Center.X - asteroid.Bounds.Radius),
-                                         (int)(asteroid.Bounds.Center.Y - asteroid.Bounds.Radius),
-                                         (int)(2* asteroid.Bounds.Radius), (int)(2* asteroid.Bounds.Radius));
-                spriteBatch.Draw(ball, rect, Color.White);
             }
-
-            var rectG = new Rectangle((int)(ship.Bounds.Center.X - ship.Bounds.Radius),
-                                     (int)(ship.Bounds.Center.Y - ship.Bounds.Radius),
-                                     (int)(2 * ship.Bounds.Radius), (int)(2 * ship.Bounds.Radius));
-            spriteBatch.Draw(ball, rectG, Color.White);
-
 
             // Draw ship
             ship.Draw(gameTime, spriteBatch);

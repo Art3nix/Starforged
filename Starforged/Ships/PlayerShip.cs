@@ -36,7 +36,7 @@ namespace Starforged {
             // Init values
             MAXSPEED = 150;
             SIZE = 48;
-            Mass = SIZE;
+            Mass = SIZE; // in tons
 
             bounds = new BoundingCircle(position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
         }
@@ -56,7 +56,7 @@ namespace Starforged {
             var r = SIZE / 2;
             if (position.X - r <= 0) {
                 Velocity.X = 0;
-                position.X = 0;
+                position.X = r;
             }
             if (position.X + r >= viewport.Width) {
                 Velocity.X = 0;

@@ -37,10 +37,13 @@ namespace Starforged {
 
 
             tIndex = tIndex % 4 + 1; //prevent index out of bounds
-            tSize = tSize % 2; //prevent index out of bounds
+            tSize = tSize % 3; //prevent index out of bounds
 
             var textSize = "s";
             switch (tSize) {
+                case 2:
+                    textSize = "l";
+                    break;
                 case 1:
                     textSize = "m";
                     break;
@@ -62,7 +65,7 @@ namespace Starforged {
         public void LoadContent(ContentManager content) {
             texture = content.Load<Texture2D>(textureName);
             size = texture.Width;
-            Mass = size;
+            Mass = size; // in tons
             bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
         }
 
