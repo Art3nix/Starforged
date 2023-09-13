@@ -20,12 +20,13 @@ namespace Starforged {
             angle = r.Next(360);
             direction = new Vector2((float)Math.Sin(angle), (float)-Math.Cos(angle));
 
-            // Choose random position based on the direction
-            position = getRandomPosition(direction);
-
             // Init values
             MAXSPEED = 150;
             SIZE = 48;
+
+            // Choose random position based on the direction
+            position = getRandomPosition(direction);
+
         }
 
         /// <summary>
@@ -75,7 +76,7 @@ namespace Starforged {
 
             //Draw the sprite
             var source = new Rectangle(animationFrame * SIZE, 0, SIZE, SIZE);
-            var textureCenter = new Vector2(texture.Width / 2, texture.Height / 2);
+            var textureCenter = new Vector2(SIZE / 2, SIZE / 2);
             spriteBatch.Draw(texture, position, source, Color.White, angle, textureCenter, 1f, SpriteEffects.None, 0);
         }
 

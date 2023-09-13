@@ -20,8 +20,8 @@ namespace Starforged {
         private float angVelocity;
 
         // Ship constants
-        private float LIN_ACCELERATION = 30;
-        private float ANG_ACCELERATION = 5;
+        private float LIN_ACCELERATION = 40;
+        private float ANG_ACCELERATION = 2;
 
 
 
@@ -91,7 +91,7 @@ namespace Starforged {
 
             //Draw the sprite
             var source = new Rectangle(animationFrame * base.SIZE, 0, base.SIZE, base.SIZE);
-            var textureCenter = new Vector2(texture.Width / 2, texture.Height / 2);
+            var textureCenter = new Vector2(SIZE / 2, SIZE / 2);
             spriteBatch.Draw(texture, position, source, Color.White, angle, textureCenter, 1f, SpriteEffects.None, 0);
         }
 
@@ -103,10 +103,10 @@ namespace Starforged {
             float angAcc = 0;
 
             if (kbState.IsKeyDown(Keys.Left)) {
-                angAcc += ANG_ACCELERATION;
+                angAcc -= ANG_ACCELERATION;
             }
             if (kbState.IsKeyDown(Keys.Right)) {
-                angAcc -= ANG_ACCELERATION;
+                angAcc += ANG_ACCELERATION;
             }
 
             if (kbState.IsKeyDown(Keys.Up)) {

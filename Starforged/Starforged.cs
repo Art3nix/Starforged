@@ -2,40 +2,33 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Threading;
 
 namespace Starforged
 {
     public class Starforged : Game {
-        private GraphicsDeviceManager graphics;
         private SpriteBatch spriteBatch;
-
-        // Background
-        private Background background;
-
-        // Fonts
-        private SpriteFont titleFont;
-        private SpriteFont textFont;
-
-        // Ships
-        private TitleScreenShip[] ships;
-
-        // Asteroids
-        private Asteroid[] asteroids;
+        private Scene currScene;
+        private Scene nextScene;
 
         /// <summary>
-        /// Get size of the window
+        /// Graphics device
         /// </summary>
-        /// <returns>size of the window</returns>
         public static GraphicsDevice gDevice;
+
+        /// <summary>
+        /// Graphics device manager
+        /// </summary>
+        public GraphicsDeviceManager gGraphicsMgr;
 
         /// <summary>
         /// Constructs the game
         /// </summary>
         public Starforged() {
-            graphics = new GraphicsDeviceManager(this);
-            graphics.PreferredBackBufferWidth = 1800;
-            graphics.PreferredBackBufferHeight = 1000;
-            graphics.ApplyChanges();
+            gGraphicsMgr = new GraphicsDeviceManager(this);
+            gGraphicsMgr.PreferredBackBufferWidth = 1800;
+            gGraphicsMgr.PreferredBackBufferHeight = 1000;
+            gGraphicsMgr.ApplyChanges();
             gDevice = GraphicsDevice;
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
@@ -46,25 +39,9 @@ namespace Starforged
         /// </summary>
         protected override void Initialize() {
 
-            // Initialize background
-            background = new TiledBackground(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
-
-            // Initialize ships
-            ships = new TitleScreenShip[] {
-                new TitleScreenShip(),
-                new TitleScreenShip(),
-                new TitleScreenShip(),
-                new TitleScreenShip()
-            };
-
-            // Initialize asteroids
-            Random r = new Random();
-            asteroids = new Asteroid[12];
-            for(var i = 0; i < asteroids.Length; i++) {
-                asteroids[i] = new Asteroid(r.Next(4));
-            }
-
             base.Initialize();
+
+            ChangeScene(new TitleScene(this));
 
         }
 
@@ -73,19 +50,6 @@ namespace Starforged
         /// </summary>
         protected override void LoadContent() {
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // Load background
-            background.LoadContent(Content, "background/space_tile");
-
-            // Load font
-            titleFont = Content.Load<SpriteFont>("title");
-            textFont = Content.Load<SpriteFont>("millennia");
-
-            // Load ships
-            foreach (var ship in ships) ship.LoadContent(Content);
-
-            // Load asteroids
-            foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
 
         }
 
@@ -97,11 +61,16 @@ namespace Starforged
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // Update ships
-            foreach (var ship in ships) ship.Update(gameTime);
+            if(nextScene != null) {
+                currScene = nextScene;
+                nextScene = null;
 
-            // Update asteroids
-            foreach (var asteroid in asteroids) asteroid.Update(gameTime);
+                currScene.Initialize();
+            } 
+
+            if(currScene != null) {
+                currScene.Update(gameTime);
+            }
 
             base.Update(gameTime);
         }
@@ -111,37 +80,28 @@ namespace Starforged
         /// </summary>
         /// <param name="gameTime">The game time</param>
         protected override void Draw(GameTime gameTime) {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            if (currScene != null) {
+                gDevice.Clear(Color.White);
+                spriteBatch.Begin();
 
-            spriteBatch.Begin();
+                currScene.Draw(gameTime, spriteBatch);
 
-            // Draw background
-            background.Draw(spriteBatch);
-
-            // Draw asteroids
-            //foreach (var asteroid in asteroids) asteroid.Draw(gameTime, spriteBatch);
-            asteroids[0].Draw(gameTime, spriteBatch, 1f);
-            asteroids[1].Draw(gameTime, spriteBatch, 2f);
-            asteroids[2].Draw(gameTime, spriteBatch, 4f);
-            asteroids[3].Draw(gameTime, spriteBatch, 8f);
-
-            // Draw ships
-            foreach (var ship in ships) ship.Draw(gameTime, spriteBatch);
-
-
-            //Draw text
-            var title = "Starforged";
-            var screenCenter = new Vector2(GraphicsDevice.Viewport.Bounds.Width / 2,
-                                           GraphicsDevice.Viewport.Bounds.Height / 2);
-            spriteBatch.DrawString(titleFont, title, new Vector2(screenCenter.X, 100), Color.White, 0f, titleFont.MeasureString(title) / 2, 1f, SpriteEffects.None, 0);
-
-            var exitText = "Press Esc to exit the game";
-            spriteBatch.DrawString(textFont, exitText, screenCenter, Color.White, 0f, textFont.MeasureString(exitText) / 2, 1f, SpriteEffects.None, 0);
-
-            spriteBatch.End();
+                spriteBatch.End();
+            }
 
 
             base.Draw(gameTime);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="next"></param>
+        public void ChangeScene(Scene next) {
+            if (currScene != next) {
+                nextScene = next;
+            }
+
         }
     }
 }
