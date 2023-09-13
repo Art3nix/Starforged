@@ -48,9 +48,9 @@ namespace Starforged {
 
             // Initialize asteroids
             Random r = new Random();
-            asteroids = new Asteroid[12];
+            asteroids = new Asteroid[6];
             for (var i = 0; i < asteroids.Length; i++) {
-                asteroids[i] = new Asteroid(r.Next(4));
+                asteroids[i] = new Asteroid(r.Next(4), r.Next(2));
             }
 
             base.Initialize();

@@ -10,10 +10,6 @@ namespace Starforged {
         // Background
         private Background background;
 
-        // Fonts
-        private SpriteFont titleFont;
-        private SpriteFont textFont;
-
         // Ships
         private PlayerShip ship;
 
@@ -44,7 +40,7 @@ namespace Starforged {
             Random r = new Random();
             asteroids = new Asteroid[12];
             for (var i = 0; i < asteroids.Length; i++) {
-                asteroids[i] = new Asteroid(r.Next(4));
+                asteroids[i] = new Asteroid(r.Next(4), r.Next(2));
             }
 
             base.Initialize();
@@ -60,10 +56,6 @@ namespace Starforged {
 
             // Load background
             background.LoadContent(Content, "background/space_tile");
-
-            // Load font
-            titleFont = Content.Load<SpriteFont>("title");
-            textFont = Content.Load<SpriteFont>("millennia");
 
             // Load ship
             ship.LoadContent(Content, "ships/ship1");

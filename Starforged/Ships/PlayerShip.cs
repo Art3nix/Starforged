@@ -20,8 +20,8 @@ namespace Starforged {
         private float angVelocity;
 
         // Ship constants
-        private float LIN_ACCELERATION = 40;
-        private float ANG_ACCELERATION = 2;
+        private float LIN_ACCELERATION = 70;
+        private float ANG_ACCELERATION = 2.5f;
 
 
 

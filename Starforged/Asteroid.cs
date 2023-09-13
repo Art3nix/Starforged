@@ -9,10 +9,11 @@ namespace Starforged {
     /// A class representing a ship
     /// </summary>
     public class Asteroid {
-        private Texture2D[] texture;
+        private Texture2D[,] texture;
         private int textureIndex;
+        private int textureSize;
         private int speed = 75;
-        private int size = 16;
+        private int size;
 
         /// <summary>
         /// Flying direction of the ship
@@ -24,7 +25,7 @@ namespace Starforged {
         /// </summary>
         public Vector2 Position;
 
-        public Asteroid (int textureIndex) {
+        public Asteroid (int tIndex, int tSize) {
             // Choose random position
             Position = getRandomPosition();
 
@@ -33,7 +34,10 @@ namespace Starforged {
             Direction = getRandomDirection(Position);
 
 
-            this.textureIndex = textureIndex % 4; //prevent index out of bounds
+            textureIndex = tIndex % 4; //prevent index out of bounds
+
+            textureSize = tSize % 2; //prevent index out of bounds
+
 
         }
 
@@ -43,12 +47,23 @@ namespace Starforged {
         /// <param name="content">The ContentManager to load with</param>
         public void LoadContent(ContentManager content) {
             //TODO put all asteroids into one file
-            texture = new Texture2D[] {
-                content.Load<Texture2D>("asteroids/asteroid1_s"),
-                content.Load<Texture2D>("asteroids/asteroid2_s"),
-                content.Load<Texture2D>("asteroids/asteroid3_s"),
-                content.Load<Texture2D>("asteroids/asteroid4_s"),
+            texture = new Texture2D[,] {
+                {
+                    content.Load<Texture2D>("asteroids/asteroid1_s"),
+                    content.Load<Texture2D>("asteroids/asteroid1_m")
+                }, {
+                    content.Load<Texture2D>("asteroids/asteroid2_s"),
+                    content.Load<Texture2D>("asteroids/asteroid2_m")
+                }, {
+                    content.Load<Texture2D>("asteroids/asteroid3_s"),
+                    content.Load<Texture2D>("asteroids/asteroid3_m")
+                }, {
+                    content.Load<Texture2D>("asteroids/asteroid4_s"),
+                    content.Load<Texture2D>("asteroids/asteroid4_m")
+                }
             };
+
+            size = texture[textureIndex, textureSize].Width;
         }
 
         /// <summary>
@@ -85,8 +100,8 @@ namespace Starforged {
 
             //Draw the sprite
             //spriteBatch.Draw(texture[textureIndex], Position, Color.White);
-            spriteBatch.Draw(texture[textureIndex], Position,
-                new Rectangle(0, 0, texture[textureIndex].Width, texture[textureIndex].Height),Color.White, 0f, new Vector2(0,0), scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture[textureIndex, textureSize], Position,
+                new Rectangle(0, 0, texture[textureIndex, textureSize].Width, texture[textureIndex, textureSize].Height),Color.White, 0f, new Vector2(0,0), scale, SpriteEffects.None, 0);
         }
 
         /// <summary>
