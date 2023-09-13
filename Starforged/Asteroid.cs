@@ -6,25 +6,47 @@ using System;
 namespace Starforged {
 
     /// <summary>
-    /// A class representing a ship
+    /// A class representing an asteroid
     /// </summary>
     public class Asteroid {
-        private Texture2D[,] texture;
-        private int textureIndex;
-        private int textureSize;
+        // Texture
+        private Texture2D texture;
+        private String textureName;
+
+        // Parameters of the asteroid
         private int speed = 75;
         private int size;
 
+        // Collision box
+        private BoundingCircle bounds;
+
         /// <summary>
-        /// Flying direction of the ship
+        /// Get bounds of the asteroid
+        /// </summary>
+        public BoundingCircle Bounds => bounds;
+
+        /// <summary>
+        /// Get mass of the asteroid
+        /// </summary>
+        public int Mass => size;
+
+        
+
+        /// <summary>
+        /// Flying direction of the asteroid
         /// </summary>
         public Vector2 Direction;
 
         /// <summary>
-        /// Position of the ship
+        /// Position of the asteroid
         /// </summary>
         public Vector2 Position;
 
+        /// <summary>
+        /// Constructs a new asteroid
+        /// </summary>
+        /// <param name="tIndex">type of the asteroid texture</param>
+        /// <param name="tSize">size of the asteroid texture</param>
         public Asteroid (int tIndex, int tSize) {
             // Choose random position
             Position = getRandomPosition();
@@ -34,9 +56,21 @@ namespace Starforged {
             Direction = getRandomDirection(Position);
 
 
-            textureIndex = tIndex % 4; //prevent index out of bounds
+            tIndex = tIndex % 4 + 1; //prevent index out of bounds
+            tSize = tSize % 2; //prevent index out of bounds
 
-            textureSize = tSize % 2; //prevent index out of bounds
+            var textSize = "s";
+            switch (tSize) {
+                case 1:
+                    textSize = "m";
+                    break;
+                case 0:
+                    textSize = "s";
+                    break;
+
+            }
+            textureName = "asteroids/asteroid" + tIndex + "_" + textSize;
+
 
 
         }
@@ -46,28 +80,13 @@ namespace Starforged {
         /// </summary>
         /// <param name="content">The ContentManager to load with</param>
         public void LoadContent(ContentManager content) {
-            //TODO put all asteroids into one file
-            texture = new Texture2D[,] {
-                {
-                    content.Load<Texture2D>("asteroids/asteroid1_s"),
-                    content.Load<Texture2D>("asteroids/asteroid1_m")
-                }, {
-                    content.Load<Texture2D>("asteroids/asteroid2_s"),
-                    content.Load<Texture2D>("asteroids/asteroid2_m")
-                }, {
-                    content.Load<Texture2D>("asteroids/asteroid3_s"),
-                    content.Load<Texture2D>("asteroids/asteroid3_m")
-                }, {
-                    content.Load<Texture2D>("asteroids/asteroid4_s"),
-                    content.Load<Texture2D>("asteroids/asteroid4_m")
-                }
-            };
-
-            size = texture[textureIndex, textureSize].Width;
+            texture = content.Load<Texture2D>(textureName);
+            size = texture.Width;
+            bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
         }
 
         /// <summary>
-        /// Update the ship's position
+        /// Update the asteroid's position
         /// </summary>
         /// <param name="gameTime"></param>
         public void Update(GameTime gameTime) {
@@ -89,6 +108,11 @@ namespace Starforged {
                
             }
 
+            // Update the bounds position
+            bounds.Center.X = Position.X;
+            bounds.Center.Y = Position.Y;
+
+
         }
 
         /// <summary>
@@ -100,14 +124,14 @@ namespace Starforged {
 
             //Draw the sprite
             //spriteBatch.Draw(texture[textureIndex], Position, Color.White);
-            spriteBatch.Draw(texture[textureIndex, textureSize], Position,
-                new Rectangle(0, 0, texture[textureIndex, textureSize].Width, texture[textureIndex, textureSize].Height),Color.White, 0f, new Vector2(0,0), scale, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, Position,
+                new Rectangle(0, 0, texture.Width, texture.Height),Color.White, 0f, new Vector2(size/2, size/2), scale, SpriteEffects.None, 0);
         }
 
         /// <summary>
-        /// Choose random direction
+        /// Choose random direction based on the position
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Random direction</returns>
         private Vector2 getRandomDirection(Vector2 pos) {
             Random r = new Random();
 
@@ -123,6 +147,10 @@ namespace Starforged {
             return dir;
         }
 
+        /// <summary>
+        /// Choose a random position
+        /// </summary>
+        /// <returns>Random position</returns>
         private Vector2 getRandomPosition() {
             Random r = new Random();
 

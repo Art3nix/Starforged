@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System;
 
@@ -23,6 +22,19 @@ namespace Starforged {
         private float LIN_ACCELERATION = 70;
         private float ANG_ACCELERATION = 2.5f;
 
+        // Collision box
+        private BoundingCircle bounds;
+
+        /// <summary>
+        /// Get bounds of the asteroid
+        /// </summary>
+        public BoundingCircle Bounds => bounds;
+
+        /// <summary>
+        /// Get mass of the ship
+        /// </summary>
+        public int Mass => SIZE;
+
 
 
         public PlayerShip() {
@@ -37,7 +49,9 @@ namespace Starforged {
             // Init values
             MAXSPEED = 150;
             SIZE = 48;
-    }
+
+            bounds = new BoundingCircle(position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
+        }
 
         /// <summary>
         /// Update the ship's position
@@ -69,6 +83,11 @@ namespace Starforged {
                 velocity.Y = 0;
                 position.Y = 0;
             }
+
+
+            // Update the bounds position
+            bounds.Center.X = position.X;
+            bounds.Center.Y = position.Y;
         }
 
         /// <summary>

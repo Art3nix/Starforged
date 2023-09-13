@@ -16,12 +16,15 @@ namespace Starforged {
         // Asteroids
         private Asteroid[] asteroids;
 
+        private Texture2D ball;
+
+
         /// <summary>
         /// Constructs the game
         /// </summary>
         public AsteroidFieldScene(Starforged g) : base(g) {
-            game.gGraphicsMgr.PreferredBackBufferWidth = 1800;
-            game.gGraphicsMgr.PreferredBackBufferHeight = 900;
+            game.gGraphicsMgr.PreferredBackBufferWidth = 500;
+            game.gGraphicsMgr.PreferredBackBufferHeight = 500;
             game.gGraphicsMgr.ApplyChanges();
         }
 
@@ -63,6 +66,10 @@ namespace Starforged {
             // Load asteroids
             foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
 
+
+            ball = Content.Load<Texture2D>("asteroids/ball");
+
+
         }
 
         /// <summary>
@@ -73,12 +80,50 @@ namespace Starforged {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 game.Exit();
 
-
             // Update ship
             ship.Update(gameTime);
 
             // Update asteroids
-            foreach (var asteroid in asteroids) asteroid.Update(gameTime);
+            for (int i = 0; i < asteroids.Length; i++) {
+                Asteroid asteroid = asteroids[i];
+                asteroid.Update(gameTime);
+
+                // Collision between two asteroids
+                for (int j = i + 1; j < asteroids.Length; j++) {
+                    Asteroid otherAsteroid = asteroids[j];
+                    // Check for overlapping
+                    if (asteroid.Bounds.CollidesWith(otherAsteroid.Bounds)) {
+                        Vector2 collisionVelocity = asteroid.Direction - otherAsteroid.Direction;
+                        var collisionAxis = otherAsteroid.Bounds.Center - asteroid.Bounds.Center;
+
+                        // Check for collision
+                        if (Vector2.Dot(collisionAxis, collisionVelocity) >= 0) {
+                            var m0 = asteroid.Mass;
+                            var m1 = otherAsteroid.Mass;
+
+                            float angle = (float)-Math.Atan2(otherAsteroid.Bounds.Center.Y - asteroid.Bounds.Center.Y,
+                                                             otherAsteroid.Bounds.Center.X - asteroid.Bounds.Center.X);
+                            
+                            Vector2 u0 = Vector2.Transform(asteroid.Direction, Matrix.CreateRotationZ(angle));
+                            Vector2 u1 = Vector2.Transform(otherAsteroid.Direction, Matrix.CreateRotationZ(angle));
+
+                            Vector2 v0, v1;
+                            v0 = new Vector2(u0.X * (m0 - m1) / (m0 + m1) + u1.X * 2 * m1 / (m0 + m1), u0.Y);
+                            v1 = new Vector2(u1.X * (m1 - m0) / (m0 + m1) + u0.X * 2 * m0 / (m0 + m1), u1.Y);
+
+                            asteroid.Direction = Vector2.Transform(v0, Matrix.CreateRotationZ(-angle));
+                            otherAsteroid.Direction = Vector2.Transform(v1, Matrix.CreateRotationZ(-angle));
+                        }
+
+
+                    }
+                }
+
+                // Collision between an asteroid and a ship
+                if (asteroid.Bounds.CollidesWith(ship.Bounds) ) {
+                    
+                }
+            }
         }
 
         /// <summary>
@@ -91,8 +136,22 @@ namespace Starforged {
             background.Draw(spriteBatch);
 
             // Draw asteroids
-            foreach (var asteroid in asteroids) asteroid.Draw(gameTime, spriteBatch);
-            
+            foreach (var asteroid in asteroids) {
+                asteroid.Draw(gameTime, spriteBatch);
+
+
+                var rect = new Rectangle((int)(asteroid.Bounds.Center.X - asteroid.Bounds.Radius),
+                                         (int)(asteroid.Bounds.Center.Y - asteroid.Bounds.Radius),
+                                         (int)(2* asteroid.Bounds.Radius), (int)(2* asteroid.Bounds.Radius));
+                spriteBatch.Draw(ball, rect, Color.White);
+            }
+
+            var rectG = new Rectangle((int)(ship.Bounds.Center.X - ship.Bounds.Radius),
+                                     (int)(ship.Bounds.Center.Y - ship.Bounds.Radius),
+                                     (int)(2 * ship.Bounds.Radius), (int)(2 * ship.Bounds.Radius));
+            spriteBatch.Draw(ball, rectG, Color.White);
+
+
             // Draw ship
             ship.Draw(gameTime, spriteBatch);
 
