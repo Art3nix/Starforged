@@ -15,25 +15,12 @@ namespace Starforged {
         private short animationFrame = 1;
 
         // Movement
-        private Vector2 velocity;
+        private Vector2 direction;
         private float angVelocity;
 
         // Ship constants
         private float LIN_ACCELERATION = 70;
         private float ANG_ACCELERATION = 2.5f;
-
-        // Collision box
-        private BoundingCircle bounds;
-
-        /// <summary>
-        /// Get bounds of the asteroid
-        /// </summary>
-        public BoundingCircle Bounds => bounds;
-
-        /// <summary>
-        /// Get mass of the ship
-        /// </summary>
-        public int Mass => SIZE;
 
 
 
@@ -49,6 +36,7 @@ namespace Starforged {
             // Init values
             MAXSPEED = 150;
             SIZE = 48;
+            Mass = SIZE;
 
             bounds = new BoundingCircle(position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
         }
@@ -58,8 +46,6 @@ namespace Starforged {
         /// </summary>
         /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime) {
-            var windowWidth = Starforged.gDevice.Viewport.Width;
-            var windowHeight = Starforged.gDevice.Viewport.Height;
 
             //Move in the correct direction
             UpdateMovement(gameTime);
@@ -67,21 +53,22 @@ namespace Starforged {
 
             // Keep ship on the screen
             var viewport = Starforged.gDevice.Viewport;
-            if (position.X < 0 && velocity.X < 0) {
-                velocity.X = 0;
+            var r = SIZE / 2;
+            if (position.X - r <= 0) {
+                Velocity.X = 0;
                 position.X = 0;
             }
-            if (position.X > viewport.Width && velocity.X > viewport.Width) {
-                velocity.X = 0;
-                position.X = 0;
+            if (position.X + r >= viewport.Width) {
+                Velocity.X = 0;
+                position.X = viewport.Width - r;
             }
-            if (position.Y < 0 && velocity.Y < 0) {
-                velocity.Y = 0;
-                position.Y = 0;
+            if (position.Y - r <= 0) {
+                Velocity.Y = 0;
+                position.Y = r;
             }
-            if (position.Y > viewport.Height && velocity.Y > viewport.Height) {
-                velocity.Y = 0;
-                position.Y = 0;
+            if (position.Y + r >= viewport.Height) {
+                Velocity.Y = 0;
+                position.Y = viewport.Height - r;
             }
 
 
@@ -140,8 +127,8 @@ namespace Starforged {
             direction.X = (float)Math.Sin(angle);
             direction.Y = (float)-Math.Cos(angle);
 
-            velocity += acc * time;
-            position += velocity * time;
+            Velocity += acc * time;
+            position += Velocity * time;
 
         }
 

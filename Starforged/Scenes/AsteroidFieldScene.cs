@@ -85,44 +85,15 @@ namespace Starforged {
 
             // Update asteroids
             for (int i = 0; i < asteroids.Length; i++) {
-                Asteroid asteroid = asteroids[i];
-                asteroid.Update(gameTime);
+                asteroids[i].Update(gameTime);
 
                 // Collision between two asteroids
                 for (int j = i + 1; j < asteroids.Length; j++) {
-                    Asteroid otherAsteroid = asteroids[j];
-                    // Check for overlapping
-                    if (asteroid.Bounds.CollidesWith(otherAsteroid.Bounds)) {
-                        Vector2 collisionVelocity = asteroid.Direction - otherAsteroid.Direction;
-                        var collisionAxis = otherAsteroid.Bounds.Center - asteroid.Bounds.Center;
-
-                        // Check for collision
-                        if (Vector2.Dot(collisionAxis, collisionVelocity) >= 0) {
-                            var m0 = asteroid.Mass;
-                            var m1 = otherAsteroid.Mass;
-
-                            float angle = (float)-Math.Atan2(otherAsteroid.Bounds.Center.Y - asteroid.Bounds.Center.Y,
-                                                             otherAsteroid.Bounds.Center.X - asteroid.Bounds.Center.X);
-                            
-                            Vector2 u0 = Vector2.Transform(asteroid.Direction, Matrix.CreateRotationZ(angle));
-                            Vector2 u1 = Vector2.Transform(otherAsteroid.Direction, Matrix.CreateRotationZ(angle));
-
-                            Vector2 v0, v1;
-                            v0 = new Vector2(u0.X * (m0 - m1) / (m0 + m1) + u1.X * 2 * m1 / (m0 + m1), u0.Y);
-                            v1 = new Vector2(u1.X * (m1 - m0) / (m0 + m1) + u0.X * 2 * m0 / (m0 + m1), u1.Y);
-
-                            asteroid.Direction = Vector2.Transform(v0, Matrix.CreateRotationZ(-angle));
-                            otherAsteroid.Direction = Vector2.Transform(v1, Matrix.CreateRotationZ(-angle));
-                        }
-
-
-                    }
+                    CollisionHelper.handleElasticCollision(asteroids[i], asteroids[j]);                   
                 }
 
                 // Collision between an asteroid and a ship
-                if (asteroid.Bounds.CollidesWith(ship.Bounds) ) {
-                    
-                }
+                CollisionHelper.handleElasticCollision(asteroids[i], ship);
             }
         }
 

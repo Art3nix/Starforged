@@ -8,7 +8,7 @@ namespace Starforged {
     /// <summary>
     /// A class representing an asteroid
     /// </summary>
-    public class Asteroid {
+    public class Asteroid : CollisionObject{
         // Texture
         private Texture2D texture;
         private String textureName;
@@ -16,26 +16,6 @@ namespace Starforged {
         // Parameters of the asteroid
         private int speed = 75;
         private int size;
-
-        // Collision box
-        private BoundingCircle bounds;
-
-        /// <summary>
-        /// Get bounds of the asteroid
-        /// </summary>
-        public BoundingCircle Bounds => bounds;
-
-        /// <summary>
-        /// Get mass of the asteroid
-        /// </summary>
-        public int Mass => size;
-
-        
-
-        /// <summary>
-        /// Flying direction of the asteroid
-        /// </summary>
-        public Vector2 Direction;
 
         /// <summary>
         /// Position of the asteroid
@@ -53,7 +33,7 @@ namespace Starforged {
 
 
             // Choose random direction based on the spawn position
-            Direction = getRandomDirection(Position);
+            Velocity = getRandomDirection(Position);
 
 
             tIndex = tIndex % 4 + 1; //prevent index out of bounds
@@ -82,6 +62,7 @@ namespace Starforged {
         public void LoadContent(ContentManager content) {
             texture = content.Load<Texture2D>(textureName);
             size = texture.Width;
+            Mass = size;
             bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
         }
 
@@ -94,17 +75,17 @@ namespace Starforged {
             var windowHeight = Starforged.gDevice.Viewport.Height;
 
             //Move in the correct direction
-            Position += Direction * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += Velocity * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 
             // Return ship back to the screen
-            if ((Position.X < -size && Direction.X < 0) ||
-                (Position.Y < -size && Direction.Y < 0) ||
-                (Position.X > windowWidth + size && Direction.X > 0) ||
-                (Position.Y > windowHeight + size && Direction.Y > 0)) {
+            if ((Position.X < -size && Velocity.X < 0) ||
+                (Position.Y < -size && Velocity.Y < 0) ||
+                (Position.X > windowWidth + size && Velocity.X > 0) ||
+                (Position.Y > windowHeight + size && Velocity.Y > 0)) {
 
                 Position = getRandomPosition();
-                Direction = getRandomDirection(Position);
+                Velocity = getRandomDirection(Position);
                
             }
 

@@ -8,7 +8,7 @@ namespace Starforged {
     /// <summary>
     /// Abstract class representing a ship
     /// </summary>
-    public abstract class Ship {
+    public abstract class Ship : CollisionObject {
         protected Texture2D texture;
 
         // Ship constants
@@ -18,7 +18,7 @@ namespace Starforged {
         /// <summary>
         /// Flying direction of the ship
         /// </summary>
-        protected Vector2 direction;
+        protected Vector2 Velocity;
 
         /// <summary>
         /// Angle of the ship

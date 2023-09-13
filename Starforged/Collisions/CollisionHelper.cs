@@ -53,5 +53,40 @@ namespace Starforged{
         public static bool Collides(BoundingRectangle r, BoundingCircle c) {
             return Collides(c, r);
         }
+
+        /// <summary>
+        /// Check for and handle elastic collision between two collision objects with bounding circles
+        /// </summary>
+        /// <param name="a">The first collision object</param>
+        /// <param name="b">The second collision object</param>
+        public static void handleElasticCollision(CollisionObject a, CollisionObject b) {
+            // Check for overlapping
+            if (a.Bounds.CollidesWith(b.Bounds)) {
+                Vector2 collisionVelocity = a.Velocity - b.Velocity;
+                var collisionAxis = b.Bounds.Center - a.Bounds.Center;
+
+                // Check for collision
+                if (Vector2.Dot(collisionAxis, collisionVelocity) >= 0) {
+                    var m0 = a.Mass;
+                    var m1 = b.Mass;
+
+                    float angle = (float)-Math.Atan2(b.Bounds.Center.Y - a.Bounds.Center.Y,
+                                                     b.Bounds.Center.X - a.Bounds.Center.X);
+
+                    Vector2 u0 = Vector2.Transform(a.Velocity, Matrix.CreateRotationZ(angle));
+                    Vector2 u1 = Vector2.Transform(b.Velocity, Matrix.CreateRotationZ(angle));
+
+                    Vector2 v0, v1;
+                    v0 = new Vector2(u0.X * (m0 - m1) / (m0 + m1) + u1.X * 2 * m1 / (m0 + m1), u0.Y);
+                    v1 = new Vector2(u1.X * (m1 - m0) / (m0 + m1) + u0.X * 2 * m0 / (m0 + m1), u1.Y);
+
+                    a.Velocity = Vector2.Transform(v0, Matrix.CreateRotationZ(-angle));
+                    b.Velocity = Vector2.Transform(v1, Matrix.CreateRotationZ(-angle));
+                }
+
+
+            }
+
+        }
     }
 }
