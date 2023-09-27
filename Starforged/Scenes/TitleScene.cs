@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Media;
 
 namespace Starforged {
     public class TitleScene : Scene {
@@ -20,6 +21,9 @@ namespace Starforged {
 
         // Asteroids
         private Asteroid[] asteroids;
+
+        // Music
+        private Song backgroundMusic;
 
         /// <summary>
         /// Constructs the game
@@ -76,6 +80,11 @@ namespace Starforged {
 
             // Load asteroids
             foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
+
+            // Load Music
+            backgroundMusic = Content.Load<Song>("music/title_music");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Play(backgroundMusic);
 
 
         }
