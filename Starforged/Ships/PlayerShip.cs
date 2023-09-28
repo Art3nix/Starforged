@@ -26,6 +26,9 @@ namespace Starforged {
 
         private SoundEffectInstance engineSoundInstance;
 
+        // Whether inertia dampers are turned on or off
+        public bool InertiaDampers = true;
+
 
 
 
@@ -127,18 +130,28 @@ namespace Starforged {
 
             if (kbState.IsKeyDown(Keys.Left)) {
                 angAcc -= ANG_ACCELERATION;
-            }
-            if (kbState.IsKeyDown(Keys.Right)) {
+            } else if (kbState.IsKeyDown(Keys.Right)) {
                 angAcc += ANG_ACCELERATION;
+            } else if (InertiaDampers) {
+                // Slow down angular movement if dampers are on
+                if (angVelocity > 0) {
+                    angAcc -= ANG_ACCELERATION;
+                } else if (angVelocity < 0) {
+                    angAcc += ANG_ACCELERATION;
+                }
+
             }
 
             if (kbState.IsKeyDown(Keys.Up)) {
                 acc += direction * LIN_ACCELERATION;
                 pitch = .5f;
             }
-            if (kbState.IsKeyDown(Keys.Down)) {
+            else if (kbState.IsKeyDown(Keys.Down)) {
                 acc -= direction * LIN_ACCELERATION;
                 pitch = -.75f;
+            } else if (InertiaDampers && ShipVelocity != Vector2.Zero) {
+                // Slow down ship if dampers are on
+                acc += (-Vector2.Normalize(ShipVelocity)) * LIN_ACCELERATION;
             }
 
             angVelocity += angAcc * time;

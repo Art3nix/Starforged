@@ -12,6 +12,9 @@ namespace Starforged {
         private Background background;
         private Texture2D splash;
 
+        // Fonts
+        private SpriteFont textFont;
+
         // Ships
         private PlayerShip ship;
 
@@ -20,6 +23,8 @@ namespace Starforged {
 
         // Collision sound
         private SoundEffect collisionSound;
+
+        private KeyboardState priorKeyboardState;
 
 
         /// <summary>
@@ -68,6 +73,9 @@ namespace Starforged {
             background.LoadContent(Content, "background/space_tile");
             splash = Content.Load<Texture2D>("background/black_splash");
 
+            // Load font
+            textFont = Content.Load<SpriteFont>("millennia");
+
             // Load asteroids
             foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
 
@@ -83,6 +91,12 @@ namespace Starforged {
         public override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 game.Exit();
+
+
+            // Turn on/off inertia dampers
+            if (Keyboard.GetState().IsKeyDown(Keys.Z) && priorKeyboardState.IsKeyUp(Keys.Z)) {
+                ship.InertiaDampers = !ship.InertiaDampers;
+            }
 
             // Update ship
             ship.Update(gameTime);
@@ -103,6 +117,8 @@ namespace Starforged {
                     collisionSound.Play();
                 }
             }
+
+            priorKeyboardState = Keyboard.GetState();
         }
 
         /// <summary>
@@ -121,6 +137,15 @@ namespace Starforged {
 
             // Draw ship
             ship.Draw(gameTime, spriteBatch);
+
+            // Draw text
+            var dampersScale = 0.8f;
+            var dampersText = "Dampers: ";
+            var dampersStatus = ship.InertiaDampers ? "On" : "Off";
+            var dampersColor = ship.InertiaDampers ? Color.LimeGreen : Color.Red;
+            var dampersPos = new Vector2(10, game.GraphicsDevice.Viewport.Height - textFont.LineSpacing);
+            spriteBatch.DrawString(textFont, dampersText, dampersPos, Color.White, 0f, new Vector2(0,0), dampersScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(textFont, dampersStatus, dampersPos + new Vector2(textFont.MeasureString(dampersText).X * dampersScale, 0), dampersColor, 0f, new Vector2(0, 0), dampersScale, SpriteEffects.None, 0);
 
 
             // Fade out transition
