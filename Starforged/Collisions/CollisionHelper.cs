@@ -59,10 +59,12 @@ namespace Starforged{
         /// </summary>
         /// <param name="a">The first collision object</param>
         /// <param name="b">The second collision object</param>
-        public static void handleElasticCollision(CollisionObject a, CollisionObject b) {
+        public static bool handleElasticCollision(CollisionObject a, CollisionObject b) {
+            //TODO fix collisions using aether2d
+
             // Check for overlapping
             if (a.Bounds.CollidesWith(b.Bounds)) {
-                Vector2 collisionVelocity = a.Velocity - b.Velocity;
+                Vector2 collisionVelocity = (a.Velocity - b.Velocity);
                 var collisionAxis = b.Bounds.Center - a.Bounds.Center;
 
                 // Check for collision
@@ -82,10 +84,14 @@ namespace Starforged{
 
                     a.Velocity = Vector2.Transform(v0, Matrix.CreateRotationZ(-angle));
                     b.Velocity = Vector2.Transform(v1, Matrix.CreateRotationZ(-angle));
+
+                    return true;
                 }
 
 
             }
+
+            return false;
 
         }
     }

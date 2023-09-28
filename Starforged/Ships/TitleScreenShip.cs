@@ -18,14 +18,14 @@ namespace Starforged {
             // Choose random angle
             Random r = new Random();
             angle = r.Next(360);
-            Velocity = new Vector2((float)Math.Sin(angle), (float)-Math.Cos(angle));
+            ShipVelocity = new Vector2((float)Math.Sin(angle), (float)-Math.Cos(angle));
 
             // Init values
             MAXSPEED = 150;
             SIZE = 48;
 
             // Choose random position based on the direction
-            position = getRandomPosition(Velocity);
+            position = getRandomPosition(ShipVelocity);
 
         }
 
@@ -38,19 +38,19 @@ namespace Starforged {
             var windowHeight = Starforged.gDevice.Viewport.Height;
 
             //Move in the correct direction
-            position += Velocity * MAXSPEED * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            position += ShipVelocity * MAXSPEED * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 
             // Return ship back to the screen
-            if ((position.X < -SIZE && Velocity.X < 0) ||
-                (position.Y < -SIZE && Velocity.Y < 0) ||
-                (position.X > windowWidth + SIZE && Velocity.X > 0) ||
-                (position.Y > windowHeight + SIZE && Velocity.Y > 0)) {
+            if ((position.X < -SIZE && ShipVelocity.X < 0) ||
+                (position.Y < -SIZE && ShipVelocity.Y < 0) ||
+                (position.X > windowWidth + SIZE && ShipVelocity.X > 0) ||
+                (position.Y > windowHeight + SIZE && ShipVelocity.Y > 0)) {
 
                 Random r = new Random();
                 angle = r.Next(360);
-                Velocity = new Vector2((float)Math.Sin(angle), (float)-Math.Cos(angle));
-                position = getRandomPosition(Velocity);
+                ShipVelocity = new Vector2((float)Math.Sin(angle), (float)-Math.Cos(angle));
+                position = getRandomPosition(ShipVelocity);
 
             }
 

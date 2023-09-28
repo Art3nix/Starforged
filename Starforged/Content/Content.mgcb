@@ -200,6 +200,30 @@
 /processorParam:TextureFormat=Compressed
 /build:millennia.spritefont
 
+#begin music/sfx/collision.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:music/sfx/collision.wav
+
+#begin music/sfx/engine.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:music/sfx/engine.wav
+
+#begin music/sfx/engine2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:music/sfx/engine2.wav
+
+#begin music/sfx/explosion1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:music/sfx/explosion1.wav
+
 #begin music/title_music.mp3
 /importer:Mp3Importer
 /processor:SongProcessor

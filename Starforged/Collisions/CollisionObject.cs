@@ -17,7 +17,7 @@ namespace Starforged {
         public int Mass;
 
         /// <summary>
-        /// Flying direction of the asteroid
+        /// Flying direction of the object
         /// </summary>
         public Vector2 Velocity;
     }

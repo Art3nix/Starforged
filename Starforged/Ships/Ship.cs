@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Starforged {
 
@@ -18,7 +19,7 @@ namespace Starforged {
         /// <summary>
         /// Flying direction of the ship
         /// </summary>
-        protected Vector2 Velocity;
+        protected Vector2 ShipVelocity;
 
         /// <summary>
         /// Angle of the ship
@@ -30,6 +31,11 @@ namespace Starforged {
         /// </summary>
         protected Vector2 position;
 
+        /// <summary>
+        /// Sound of the engines
+        /// </summary>
+        protected SoundEffect engineSound;
+
 
         /// <summary>
         /// Abstract method to load the sprite texture using the provided ContentManager
@@ -37,6 +43,7 @@ namespace Starforged {
         /// <param name="textureName">The name of the texture to load</param>
         public void LoadContent(ContentManager content, string textureName) {
             texture = content.Load<Texture2D>(textureName);
+            engineSound = content.Load<SoundEffect>("music/sfx/engine2");
         }
 
         /// <summary>

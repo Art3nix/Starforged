@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Starforged {
     public class AsteroidFieldScene : Scene {
@@ -15,6 +16,9 @@ namespace Starforged {
 
         // Asteroids
         private Asteroid[] asteroids;
+
+        // Collision sound
+        private SoundEffect collisionSound;
 
 
         /// <summary>
@@ -34,9 +38,6 @@ namespace Starforged {
             // Initialize background
             background = new TiledBackground(game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height);
 
-            // Initialize ships
-            ship = new PlayerShip();
-
             // Initialize asteroids
             Random r = new Random();
             asteroids = new Asteroid[40];
@@ -45,6 +46,10 @@ namespace Starforged {
             }
 
             base.Initialize();
+
+
+            // Initialize ships
+            ship = new PlayerShip(Content, "ships/ship1");
 
         }
 
@@ -58,12 +63,11 @@ namespace Starforged {
             // Load background
             background.LoadContent(Content, "background/space_tile");
 
-            // Load ship
-            ship.LoadContent(Content, "ships/ship1");
-
             // Load asteroids
             foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
 
+            // Load sfx
+            collisionSound = Content.Load<SoundEffect>("music/sfx/collision");
 
         }
 
@@ -84,11 +88,15 @@ namespace Starforged {
 
                 // Collision between two asteroids
                 for (int j = i + 1; j < asteroids.Length; j++) {
-                    CollisionHelper.handleElasticCollision(asteroids[i], asteroids[j]);                   
+                    if (CollisionHelper.handleElasticCollision(asteroids[i], asteroids[j])) {
+                        collisionSound.Play();
+                    }
                 }
 
                 // Collision between an asteroid and a ship
-                CollisionHelper.handleElasticCollision(asteroids[i], ship);
+                if(CollisionHelper.handleElasticCollision(asteroids[i], ship)) {
+                    collisionSound.Play();
+                }
             }
         }
 

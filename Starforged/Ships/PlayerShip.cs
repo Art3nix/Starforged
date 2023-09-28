@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -22,9 +24,16 @@ namespace Starforged {
         private float LIN_ACCELERATION = 70;
         private float ANG_ACCELERATION = 2.5f;
 
+        private SoundEffectInstance engineSoundInstance;
 
 
-        public PlayerShip() {
+
+
+        public PlayerShip(ContentManager content, String textureName) {
+
+            // Load textures
+            LoadContent(content, textureName);
+
             // Choose random angle
             Random r = new Random();
             angle = r.Next(360);
@@ -39,6 +48,11 @@ namespace Starforged {
             Mass = SIZE; // in tons
 
             bounds = new BoundingCircle(position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
+
+            engineSoundInstance = engineSound.CreateInstance();
+            engineSoundInstance.IsLooped = true;
+            engineSoundInstance.Volume = 0.5f;
+            engineSoundInstance.Play();
         }
 
         /// <summary>
@@ -55,19 +69,19 @@ namespace Starforged {
             var viewport = Starforged.gDevice.Viewport;
             var r = SIZE / 2;
             if (position.X - r <= 0) {
-                Velocity.X = 0;
+                ShipVelocity.X = 0;
                 position.X = r;
             }
             if (position.X + r >= viewport.Width) {
-                Velocity.X = 0;
+                ShipVelocity.X = 0;
                 position.X = viewport.Width - r;
             }
             if (position.Y - r <= 0) {
-                Velocity.Y = 0;
+                ShipVelocity.Y = 0;
                 position.Y = r;
             }
             if (position.Y + r >= viewport.Height) {
-                Velocity.Y = 0;
+                ShipVelocity.Y = 0;
                 position.Y = viewport.Height - r;
             }
 
@@ -108,6 +122,9 @@ namespace Starforged {
             Vector2 acc = new Vector2(0, 0);
             float angAcc = 0;
 
+
+            float pitch = 0.0f;
+
             if (kbState.IsKeyDown(Keys.Left)) {
                 angAcc -= ANG_ACCELERATION;
             }
@@ -117,9 +134,11 @@ namespace Starforged {
 
             if (kbState.IsKeyDown(Keys.Up)) {
                 acc += direction * LIN_ACCELERATION;
+                pitch = .5f;
             }
             if (kbState.IsKeyDown(Keys.Down)) {
                 acc -= direction * LIN_ACCELERATION;
+                pitch = -.75f;
             }
 
             angVelocity += angAcc * time;
@@ -127,8 +146,10 @@ namespace Starforged {
             direction.X = (float)Math.Sin(angle);
             direction.Y = (float)-Math.Cos(angle);
 
-            Velocity += acc * time;
-            position += Velocity * time;
+            ShipVelocity += acc * time;
+            position += ShipVelocity * time;
+
+            engineSoundInstance.Pitch = pitch;
 
         }
 

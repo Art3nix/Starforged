@@ -24,6 +24,7 @@ namespace Starforged {
             // Initialize content
             Content = new ContentManager(game.Services);
             Content.RootDirectory = game.Content.RootDirectory;
+
             LoadContent();
         }
 
@@ -31,6 +32,14 @@ namespace Starforged {
         /// Loads game content
         /// </summary>
         public virtual void LoadContent() { }
+
+        /// <summary>
+        /// Unloads game content
+        /// </summary>
+        public virtual void UnloadContent() {
+            Content.Unload();
+            Content = null;
+        }
 
         /// <summary>
         /// updates the game
