@@ -51,7 +51,7 @@ namespace Starforged {
 
             engineSoundInstance = engineSound.CreateInstance();
             engineSoundInstance.IsLooped = true;
-            engineSoundInstance.Volume = 0.5f;
+            engineSoundInstance.Volume = 0.1f;
             engineSoundInstance.Play();
         }
 

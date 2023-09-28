@@ -70,6 +70,8 @@ namespace Starforged
 
                 // Change scene after completing transition and start transitionOn in new scene
                 if (currScene == null || currScene.State == SceneState.Inactive) {
+                    if (currScene != null) currScene.UnloadContent();
+
                     currScene = nextScene;
                     nextScene = null;
 

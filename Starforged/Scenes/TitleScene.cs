@@ -176,8 +176,13 @@ namespace Starforged {
         }
 
         public override void updateTransitionOff(GameTime gameTime) {
-            if (transitionTimeElapsed > timeTransitionOff) State = SceneState.Inactive;
-            else transitionTimeElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (transitionTimeElapsed > timeTransitionOff) {
+                State = SceneState.Inactive;
+                MediaPlayer.Stop();
+            } else {
+                transitionTimeElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
+                MediaPlayer.Volume = 1 - (float)Math.Pow(transitionTimeElapsed / timeTransitionOff, 2);
+            }
         }
     }
 }
