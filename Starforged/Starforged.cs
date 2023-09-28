@@ -62,13 +62,31 @@ namespace Starforged
                 Exit();
 
             if(nextScene != null) {
-                currScene = nextScene;
-                nextScene = null;
+                // Start transition
+                if(currScene != null && currScene.State == SceneState.Active) currScene.State = SceneState.TransitionOff;
 
-                currScene.Initialize();
+                // Progress transitioning
+                if(currScene != null && currScene.State == SceneState.TransitionOff) currScene.updateTransitionOff(gameTime);
+
+                // Change scene after completing transition and start transitionOn in new scene
+                if (currScene == null || currScene.State == SceneState.Inactive) {
+                    currScene = nextScene;
+                    nextScene = null;
+
+                    // Update screen size if needed
+                    gGraphicsMgr.ApplyChanges();
+                    currScene.Initialize();
+                    currScene.State = SceneState.TransitionOn;
+                }
             } 
 
+            if(currScene.State == SceneState.TransitionOn) {
+                // Progress transitionOn
+                currScene.updateTransitionOn(gameTime);
+            }
+
             if(currScene != null) {
+                // Update current scene
                 currScene.Update(gameTime);
             }
 

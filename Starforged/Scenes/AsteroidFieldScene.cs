@@ -10,6 +10,7 @@ namespace Starforged {
 
         // Background
         private Background background;
+        private Texture2D splash;
 
         // Ships
         private PlayerShip ship;
@@ -27,7 +28,6 @@ namespace Starforged {
         public AsteroidFieldScene(Starforged g) : base(g) {
             game.gGraphicsMgr.PreferredBackBufferWidth = 1800;
             game.gGraphicsMgr.PreferredBackBufferHeight = 1000;
-            game.gGraphicsMgr.ApplyChanges();
         }
 
         /// <summary>
@@ -44,6 +44,10 @@ namespace Starforged {
             for (var i = 0; i < asteroids.Length; i++) {
                 asteroids[i] = new Asteroid(r.Next(4), r.Next(3));
             }
+
+            // Transition times
+            timeTransitionOn = 2;
+            timeTransitionOff = 4;
 
             base.Initialize();
 
@@ -62,6 +66,7 @@ namespace Starforged {
 
             // Load background
             background.LoadContent(Content, "background/space_tile");
+            splash = Content.Load<Texture2D>("background/black_splash");
 
             // Load asteroids
             foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
@@ -117,6 +122,30 @@ namespace Starforged {
             // Draw ship
             ship.Draw(gameTime, spriteBatch);
 
+
+            // Fade out transition
+            if (State == SceneState.TransitionOff) {
+                var rect = new Rectangle(0, 0, game.GraphicsDevice.Viewport.Bounds.Width, game.GraphicsDevice.Viewport.Bounds.Height);
+                float alpha = (float)Math.Pow(transitionTimeElapsed / timeTransitionOff, 2);
+                spriteBatch.Draw(splash, rect, Color.White * alpha);
+            }
+
+            // Fade in transition
+            if (State == SceneState.TransitionOn) {
+                var rect = new Rectangle(0, 0, game.GraphicsDevice.Viewport.Bounds.Width, game.GraphicsDevice.Viewport.Bounds.Height);
+                float alpha = 1 - (float)Math.Pow(transitionTimeElapsed / timeTransitionOn, 2);
+                spriteBatch.Draw(splash, rect, Color.White * alpha);
+            }
+        }
+
+        public override void updateTransitionOn(GameTime gameTime) {
+            if (transitionTimeElapsed > timeTransitionOn) State = SceneState.Active;
+            else transitionTimeElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        public override void updateTransitionOff(GameTime gameTime) {
+            if (transitionTimeElapsed > timeTransitionOff) State = SceneState.Inactive;
+            else transitionTimeElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
     }
 }

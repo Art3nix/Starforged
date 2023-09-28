@@ -7,6 +7,7 @@ using SharpDX.Direct3D9;
 namespace Starforged {
     public abstract class Background {
 
+        protected Starforged game;
 
         protected Texture2D texture;
 

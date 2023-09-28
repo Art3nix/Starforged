@@ -5,10 +5,35 @@ using Microsoft.Xna.Framework.Input;
 using System;
 
 namespace Starforged {
+
+    public enum SceneState {
+        Active,
+        TransitionOn,
+        TransitionOff,
+        Inactive
+    }
+
     public class Scene {
         protected Starforged game;
 
         protected ContentManager Content;
+
+        /// <summary>
+        /// State of this scene
+        /// </summary>
+        public SceneState State = SceneState.Inactive;
+        /// <summary>
+        /// How much time has already elapsed during transition
+        /// </summary>
+        public float transitionTimeElapsed = 0;
+        /// <summary>
+        /// Length of transition off in seconds
+        /// </summary>
+        public float timeTransitionOff;
+        /// <summary>
+        /// Length of transition on in seconds
+        /// </summary>
+        public float timeTransitionOn;
 
         /// <summary>
         /// Constructs the game
@@ -52,5 +77,15 @@ namespace Starforged {
         /// </summary>
         /// <param name="gameTime">The game time</param>
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch) { }
+
+        /// <summary>
+        /// Effects to do when loading this screen
+        /// </summary>
+        public virtual void updateTransitionOn(GameTime gameTime) { }
+
+        /// <summary>
+        /// Effects to do when unloading this screen 
+        /// </summary>
+        public virtual void updateTransitionOff(GameTime gameTime) { }
     }
 }
