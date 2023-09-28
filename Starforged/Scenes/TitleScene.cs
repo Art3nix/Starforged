@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Media;
+using SharpDX.Direct2D1.Effects;
 
 namespace Starforged {
     public class TitleScene : Scene {
@@ -24,6 +25,13 @@ namespace Starforged {
 
         // Music
         private Song backgroundMusic;
+
+
+        private float textScale = 0.9f;
+        private float growTextIncrement = 0.25f;
+        private float minTextScale = 0.9f;
+        private float maxTextScale = 1.15f;
+
 
         /// <summary>
         /// Constructs the game
@@ -107,6 +115,14 @@ namespace Starforged {
 
             // Update asteroids
             foreach (var asteroid in asteroids) asteroid.Update(gameTime);
+
+            //Grow and shrink text
+            if ((growTextIncrement > 0 && textScale >= maxTextScale) ||
+                growTextIncrement < 0 && textScale <= minTextScale) {
+                growTextIncrement = -growTextIncrement;
+            }
+            textScale += (float)(growTextIncrement * gameTime.ElapsedGameTime.TotalSeconds);
+
         }
 
         /// <summary>
@@ -131,7 +147,7 @@ namespace Starforged {
             spriteBatch.DrawString(titleFont, title, new Vector2(screenCenter.X, 100), Color.White, 0f, titleFont.MeasureString(title) / 2, 1f, SpriteEffects.None, 0);
 
             var exitText = "Press Enter to join the universe";
-            spriteBatch.DrawString(textFont, exitText, screenCenter, Color.White, 0f, textFont.MeasureString(exitText) / 2, 1f, SpriteEffects.None, 0);
+            spriteBatch.DrawString(textFont, exitText, screenCenter, Color.White, 0f, textFont.MeasureString(exitText) / 2, textScale, SpriteEffects.None, 0);
         }
     }
 }
