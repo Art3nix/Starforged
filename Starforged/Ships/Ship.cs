@@ -38,7 +38,7 @@ namespace Starforged {
 
 
         /// <summary>
-        /// Abstract method to load the sprite texture using the provided ContentManager
+        /// Method to load the sprite texture using the provided ContentManager
         /// </summary>
         /// <param name="textureName">The name of the texture to load</param>
         public void LoadContent(ContentManager content, string textureName) {

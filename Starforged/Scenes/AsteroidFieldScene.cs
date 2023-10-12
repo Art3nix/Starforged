@@ -26,6 +26,8 @@ namespace Starforged {
 
         private KeyboardState priorKeyboardState;
 
+        private Hud hud;
+
 
         /// <summary>
         /// Constructs the game
@@ -50,6 +52,8 @@ namespace Starforged {
                 asteroids[i] = new Asteroid(r.Next(4), r.Next(3));
             }
 
+            hud = new Hud(game);
+
             // Transition times
             timeTransitionOn = 2;
             timeTransitionOff = 4;
@@ -72,6 +76,9 @@ namespace Starforged {
             // Load background
             background.LoadContent(Content, "background/space_tile");
             splash = Content.Load<Texture2D>("background/black_splash");
+
+            // Load Hud
+            hud.LoadContent(Content);
 
             // Load font
             textFont = Content.Load<SpriteFont>("millennia");
@@ -147,6 +154,9 @@ namespace Starforged {
             spriteBatch.DrawString(textFont, dampersText, dampersPos, Color.White, 0f, new Vector2(0,0), dampersScale, SpriteEffects.None, 0);
             spriteBatch.DrawString(textFont, dampersStatus, dampersPos + new Vector2(textFont.MeasureString(dampersText).X * dampersScale, 0), dampersColor, 0f, new Vector2(0, 0), dampersScale, SpriteEffects.None, 0);
 
+
+            // Draw HUD
+            hud.Draw(gameTime, spriteBatch);
 
             // Fade out transition
             if (State == SceneState.TransitionOff) {

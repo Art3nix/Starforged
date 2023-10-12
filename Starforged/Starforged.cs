@@ -22,6 +22,11 @@ namespace Starforged
         public GraphicsDeviceManager gGraphicsMgr;
 
         /// <summary>
+        /// Player profile and stats
+        /// </summary>
+        public Player Player;
+
+        /// <summary>
         /// Constructs the game
         /// </summary>
         public Starforged() {
@@ -38,6 +43,8 @@ namespace Starforged
         /// Initializes the game
         /// </summary>
         protected override void Initialize() {
+
+            Player = new Player();
 
             base.Initialize();
 
