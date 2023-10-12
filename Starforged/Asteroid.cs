@@ -28,13 +28,7 @@ namespace Starforged {
         /// <param name="tIndex">type of the asteroid texture</param>
         /// <param name="tSize">size of the asteroid texture</param>
         public Asteroid (int tIndex, int tSize) {
-            // Choose random position
-            Position = getRandomPosition();
-
-
-            // Choose random direction based on the spawn position
-            Velocity = getRandomDirection(Position);
-
+            Respawn();
 
             tIndex = tIndex % 4 + 1; //prevent index out of bounds
             tSize = tSize % 3; //prevent index out of bounds
@@ -151,6 +145,16 @@ namespace Starforged {
             else Position.Y -= size;
 
             return Position;
+        }
+
+        public void Respawn() {
+            // Choose random position
+            Position = getRandomPosition();
+
+
+            // Choose random direction based on the spawn position
+            Velocity = getRandomDirection(Position);
+
         }
 
     }

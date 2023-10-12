@@ -17,15 +17,15 @@ namespace Starforged {
         public TitleScreenShip () {
             // Choose random angle
             Random r = new Random();
-            angle = r.Next(360);
-            ShipVelocity = new Vector2((float)Math.Sin(angle), (float)-Math.Cos(angle));
+            Angle = r.Next(360);
+            ShipVelocity = new Vector2((float)Math.Sin(Angle), (float)-Math.Cos(Angle));
 
             // Init values
             MAXSPEED = 150;
             SIZE = 48;
 
             // Choose random position based on the direction
-            position = getRandomPosition(ShipVelocity);
+            Position = getRandomPosition(ShipVelocity);
 
         }
 
@@ -38,19 +38,19 @@ namespace Starforged {
             var windowHeight = Starforged.gDevice.Viewport.Height;
 
             //Move in the correct direction
-            position += ShipVelocity * MAXSPEED * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += ShipVelocity * MAXSPEED * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 
             // Return ship back to the screen
-            if ((position.X < -SIZE && ShipVelocity.X < 0) ||
-                (position.Y < -SIZE && ShipVelocity.Y < 0) ||
-                (position.X > windowWidth + SIZE && ShipVelocity.X > 0) ||
-                (position.Y > windowHeight + SIZE && ShipVelocity.Y > 0)) {
+            if ((Position.X < -SIZE && ShipVelocity.X < 0) ||
+                (Position.Y < -SIZE && ShipVelocity.Y < 0) ||
+                (Position.X > windowWidth + SIZE && ShipVelocity.X > 0) ||
+                (Position.Y > windowHeight + SIZE && ShipVelocity.Y > 0)) {
 
                 Random r = new Random();
-                angle = r.Next(360);
-                ShipVelocity = new Vector2((float)Math.Sin(angle), (float)-Math.Cos(angle));
-                position = getRandomPosition(ShipVelocity);
+                Angle = r.Next(360);
+                ShipVelocity = new Vector2((float)Math.Sin(Angle), (float)-Math.Cos(Angle));
+                Position = getRandomPosition(ShipVelocity);
 
             }
 
@@ -77,7 +77,7 @@ namespace Starforged {
             //Draw the sprite
             var source = new Rectangle(animationFrame * SIZE, 0, SIZE, SIZE);
             var textureCenter = new Vector2(SIZE / 2, SIZE / 2);
-            spriteBatch.Draw(texture, position, source, Color.White, angle, textureCenter, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, Position, source, Color.White, Angle, textureCenter, 1f, SpriteEffects.None, 0);
         }
 
         private Vector2 getRandomPosition(Vector2 dir) {
@@ -86,21 +86,21 @@ namespace Starforged {
             var maxX = Starforged.gDevice.Viewport.Width - SIZE;
             var maxY = Starforged.gDevice.Viewport.Height - SIZE;
 
-            var Position = new Vector2(r.Next(maxX), r.Next(maxY));
+            var pos = new Vector2(r.Next(maxX), r.Next(maxY));
 
             if(dir.X < 0) {
-                Position.X += maxX;
+                pos.X += maxX;
             } else {
-                Position.X -= maxX;
+                pos.X -= maxX;
             }
            
             if(dir.Y < 0) {
-                Position.Y += maxY;
+                pos.Y += maxY;
             } else {
-                Position.Y -= maxY;
+                pos.Y -= maxY;
             }
 
-            return Position;
+            return pos;
         }
 
     }

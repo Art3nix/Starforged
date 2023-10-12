@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using System;
 using Microsoft.Xna.Framework.Audio;
+using System.Reflection.Metadata;
+using System.Collections.Generic;
 
 namespace Starforged {
     public class AsteroidFieldScene : Scene {
@@ -20,6 +22,9 @@ namespace Starforged {
 
         // Asteroids
         private Asteroid[] asteroids;
+
+        // Ship projectiles
+        private List<Projectile> projectiles = new List<Projectile>();
 
         // Collision sound
         private SoundEffect collisionSound;
@@ -108,6 +113,10 @@ namespace Starforged {
             // Update ship
             ship.Update(gameTime);
 
+            // Update projectile positions
+            foreach (var p in projectiles) p.Update(gameTime);
+
+
             // Update asteroids
             for (int i = 0; i < asteroids.Length; i++) {
                 asteroids[i].Update(gameTime);
@@ -123,6 +132,28 @@ namespace Starforged {
                 if(CollisionHelper.handleElasticCollision(asteroids[i], ship)) {
                     collisionSound.Play();
                 }
+
+                // Collision between an asteroid and a projectile
+                for (int j = 0; j < projectiles.Count; j++) {
+                    if (CollisionHelper.Collides(asteroids[i].Bounds, projectiles[j].Bounds)) {
+                        // Particle
+
+                        asteroids[i].Respawn();
+                        projectiles.RemoveAt(j);
+                    }
+                }
+            }
+
+            // Shoot
+            if (Keyboard.GetState().IsKeyDown(Keys.Space) && priorKeyboardState.IsKeyUp(Keys.Space) && game.Player.Ammo > 0) {
+                float projOffset = 24;
+                Vector2 projPos = new Vector2((float)(ship.Position.X + projOffset * Math.Sin(ship.Angle)),
+                                              (float)(ship.Position.Y + projOffset * -Math.Cos(ship.Angle)));
+                Vector2 projDir = new Vector2((float)Math.Sin(ship.Angle),
+                                              (float)-Math.Cos(ship.Angle));
+                Projectile proj = new Projectile(Content, projPos, projDir);
+                projectiles.Add(proj);
+                game.Player.Ammo--;
             }
 
             priorKeyboardState = Keyboard.GetState();
@@ -144,6 +175,10 @@ namespace Starforged {
 
             // Draw ship
             ship.Draw(gameTime, spriteBatch);
+
+            // Update projectile texture
+            foreach (var p in projectiles) p.Draw(gameTime, spriteBatch);
+
 
             // Draw text
             var dampersScale = 0.8f;

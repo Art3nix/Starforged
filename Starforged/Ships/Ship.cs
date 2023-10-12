@@ -24,12 +24,12 @@ namespace Starforged {
         /// <summary>
         /// Angle of the ship
         /// </summary>
-        protected float angle;
+        public float Angle;
 
         /// <summary>
         /// Position of the ship
         /// </summary>
-        protected Vector2 position;
+        public Vector2 Position;
 
         /// <summary>
         /// Sound of the engines

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
 
 namespace Starforged {
 
@@ -39,18 +40,18 @@ namespace Starforged {
 
             // Choose random angle
             Random r = new Random();
-            angle = r.Next(360);
-            direction = new Vector2((float)Math.Sin(angle), (float)-Math.Cos(angle));
+            Angle = r.Next(360);
+            direction = new Vector2((float)Math.Sin(Angle), (float)-Math.Cos(Angle));
 
             // Choose random position based on the direction
-            position = new Vector2(Starforged.gDevice.Viewport.Width / 2, Starforged.gDevice.Viewport.Height / 2);
+            Position = new Vector2(Starforged.gDevice.Viewport.Width / 2, Starforged.gDevice.Viewport.Height / 2);
 
             // Init values
             MAXSPEED = 150;
             SIZE = 48;
             Mass = SIZE; // in tons
 
-            bounds = new BoundingCircle(position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
+            bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
 
             engineSoundInstance = engineSound.CreateInstance();
             engineSoundInstance.IsLooped = true;
@@ -63,7 +64,7 @@ namespace Starforged {
         /// </summary>
         /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime) {
-
+            KeyboardState kbState = Keyboard.GetState();
             //Move in the correct direction
             UpdateMovement(gameTime);
 
@@ -71,27 +72,28 @@ namespace Starforged {
             // Keep ship on the screen
             var viewport = Starforged.gDevice.Viewport;
             var r = SIZE / 2;
-            if (position.X - r <= 0) {
+            if (Position.X - r <= 0) {
                 ShipVelocity.X = 0;
-                position.X = r;
+                Position.X = r;
             }
-            if (position.X + r >= viewport.Width) {
+            if (Position.X + r >= viewport.Width) {
                 ShipVelocity.X = 0;
-                position.X = viewport.Width - r;
+                Position.X = viewport.Width - r;
             }
-            if (position.Y - r <= 0) {
+            if (Position.Y - r <= 0) {
                 ShipVelocity.Y = 0;
-                position.Y = r;
+                Position.Y = r;
             }
-            if (position.Y + r >= viewport.Height) {
+            if (Position.Y + r >= viewport.Height) {
                 ShipVelocity.Y = 0;
-                position.Y = viewport.Height - r;
+                Position.Y = viewport.Height - r;
             }
+
 
 
             // Update the bounds position
-            bounds.Center.X = position.X;
-            bounds.Center.Y = position.Y;
+            bounds.Center.X = Position.X;
+            bounds.Center.Y = Position.Y;
         }
 
         /// <summary>
@@ -115,7 +117,7 @@ namespace Starforged {
             //Draw the sprite
             var source = new Rectangle(animationFrame * base.SIZE, 0, base.SIZE, base.SIZE);
             var textureCenter = new Vector2(SIZE / 2, SIZE / 2);
-            spriteBatch.Draw(texture, position, source, Color.White, angle, textureCenter, 1f, SpriteEffects.None, 0);
+            spriteBatch.Draw(texture, Position, source, Color.White, Angle, textureCenter, 1f, SpriteEffects.None, 0);
         }
 
         public void UpdateMovement(GameTime gameTime) {
@@ -155,12 +157,12 @@ namespace Starforged {
             }
 
             angVelocity += angAcc * time;
-            angle += angVelocity * time;
-            direction.X = (float)Math.Sin(angle);
-            direction.Y = (float)-Math.Cos(angle);
+            Angle += angVelocity * time;
+            direction.X = (float)Math.Sin(Angle);
+            direction.Y = (float)-Math.Cos(Angle);
 
             ShipVelocity += acc * time;
-            position += ShipVelocity * time;
+            Position += ShipVelocity * time;
 
             engineSoundInstance.Pitch = pitch;
 
