@@ -43,6 +43,9 @@ namespace Starforged {
         public AsteroidFieldScene(Starforged g) : base(g) {
             game.gGraphicsMgr.PreferredBackBufferWidth = 1800;
             game.gGraphicsMgr.PreferredBackBufferHeight = 1000;
+
+            Width = 2600;
+            Height = 2600;
         }
 
         /// <summary>
@@ -51,13 +54,13 @@ namespace Starforged {
         public override void Initialize() {
 
             // Initialize background
-            background = new TiledBackground(game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height);
+            background = new TiledBackground(Width, Height);
 
             // Initialize asteroids
             Random r = new Random();
             asteroids = new Asteroid[40];
             for (var i = 0; i < asteroids.Length; i++) {
-                asteroids[i] = new Asteroid(r.Next(4), r.Next(3));
+                asteroids[i] = new Asteroid(game, r.Next(4), r.Next(3));
             }
 
             // Initialize particles
@@ -153,6 +156,25 @@ namespace Starforged {
                 }
             }
 
+            // Keep ship on the map
+            var r = ship.SIZE / 2;
+            if (ship.Position.X - r <= 0) {
+                ship.ShipVelocity.X = 0;
+                ship.Position.X = r;
+            }
+            if (ship.Position.X + r >= Width) {
+                ship.ShipVelocity.X = 0;
+                ship.Position.X = Width - r;
+            }
+            if (ship.Position.Y - r <= 0) {
+                ship.ShipVelocity.Y = 0;
+                ship.Position.Y = r;
+            }
+            if (ship.Position.Y + r >= Height) {
+                ship.ShipVelocity.Y = 0;
+                ship.Position.Y = Height - r;
+            }
+
             // Shoot
             if (Keyboard.GetState().IsKeyDown(Keys.Space) && priorKeyboardState.IsKeyUp(Keys.Space) && game.Player.Ammo > 0) {
                 float projOffset = 24;
@@ -174,8 +196,26 @@ namespace Starforged {
         /// <param name="gameTime">The game time</param>
         public override void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
 
-            // Draw background
+            spriteBatch.End();
+            // Variables for scrolling background
+            Vector2 screenCenter = new Vector2(game.GraphicsDevice.Viewport.Width / 2, game.GraphicsDevice.Viewport.Height / 2);
+            Vector2 playerPos = new Vector2(MathHelper.Clamp(ship.Position.X, screenCenter.X, Width - screenCenter.X), MathHelper.Clamp(ship.Position.Y, screenCenter.Y, Height - screenCenter.Y));
+            Vector2 offset = new Vector2(screenCenter.X - playerPos.X, screenCenter.Y - playerPos.Y);
+            Matrix transform = Matrix.CreateTranslation(offset.X, offset.Y, 0);
+
+            // Background batch
+            spriteBatch.Begin(transformMatrix: transform);
+
             background.Draw(spriteBatch);
+            spriteBatch.End();
+
+
+            // Objects batch
+            transform = Matrix.CreateTranslation(offset.X, offset.Y, 0);
+            spriteBatch.Begin(transformMatrix: transform);
+
+            // Add transformation to particles
+            explosionParticles.TransformMatrix = transform;
 
             // Draw asteroids
             foreach (var asteroid in asteroids) {
@@ -188,6 +228,11 @@ namespace Starforged {
             // Update projectile texture
             foreach (var p in projectiles) p.Draw(gameTime, spriteBatch);
 
+            spriteBatch.End();
+
+
+            // Static objects batch
+            spriteBatch.Begin();
 
             // Draw text
             var dampersScale = 0.8f;

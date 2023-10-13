@@ -9,6 +9,9 @@ namespace Starforged {
     /// A class representing an asteroid
     /// </summary>
     public class Asteroid : CollisionObject{
+
+        private Starforged game;
+
         // Texture
         private Texture2D texture;
         private String textureName;
@@ -27,7 +30,9 @@ namespace Starforged {
         /// </summary>
         /// <param name="tIndex">type of the asteroid texture</param>
         /// <param name="tSize">size of the asteroid texture</param>
-        public Asteroid (int tIndex, int tSize) {
+        public Asteroid (Starforged g, int tIndex, int tSize) {
+            game = g;
+
             Respawn();
 
             tIndex = tIndex % 4 + 1; //prevent index out of bounds
@@ -68,8 +73,16 @@ namespace Starforged {
         /// </summary>
         /// <param name="gameTime"></param>
         public void Update(GameTime gameTime) {
-            var windowWidth = Starforged.gDevice.Viewport.Width;
-            var windowHeight = Starforged.gDevice.Viewport.Height;
+
+            // TODO maybe add class variable
+            int sceneWidth, sceneHeight;
+            if (game.CurrScene != null) {
+                sceneWidth = game.CurrScene.Width;
+                sceneHeight = game.CurrScene.Height;
+            } else {
+                sceneWidth = Starforged.gDevice.Viewport.Width;
+                sceneHeight = Starforged.gDevice.Viewport.Height;
+            }
 
             //Move in the correct direction
             Position += Velocity * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -78,8 +91,8 @@ namespace Starforged {
             // Return ship back to the screen
             if ((Position.X < -size && Velocity.X < 0) ||
                 (Position.Y < -size && Velocity.Y < 0) ||
-                (Position.X > windowWidth + size && Velocity.X > 0) ||
-                (Position.Y > windowHeight + size && Velocity.Y > 0)) {
+                (Position.X > sceneWidth + size && Velocity.X > 0) ||
+                (Position.Y > sceneHeight + size && Velocity.Y > 0)) {
 
                 Position = getRandomPosition();
                 Velocity = getRandomDirection(Position);
@@ -113,12 +126,19 @@ namespace Starforged {
         private Vector2 getRandomDirection(Vector2 pos) {
             Random r = new Random();
 
-            var screenWidth = Starforged.gDevice.Viewport.Width;
-            var screenHeight = Starforged.gDevice.Viewport.Height;
-            var offsetX = screenWidth / 4;
-            var offsetY = screenHeight / 4;
+            int sceneWidth, sceneHeight;
+            if (game.CurrScene != null) {
+                sceneWidth = game.CurrScene.Width;
+                sceneHeight = game.CurrScene.Height;
+            } else {
+                sceneWidth = Starforged.gDevice.Viewport.Width;
+                sceneHeight = Starforged.gDevice.Viewport.Height;
+            }
 
-            Vector2 targetPos = new Vector2(r.Next(offsetX, screenWidth - offsetX), r.Next(offsetY, screenHeight - offsetY));
+            var offsetX = sceneWidth / 4;
+            var offsetY = sceneHeight / 4;
+
+            Vector2 targetPos = new Vector2(r.Next(offsetX, sceneWidth - offsetX), r.Next(offsetY, sceneHeight - offsetY));
             Vector2 dir = targetPos - pos;
             dir = Vector2.Normalize(dir);
 
@@ -132,16 +152,22 @@ namespace Starforged {
         private Vector2 getRandomPosition() {
             Random r = new Random();
 
-            var screenWidth = Starforged.gDevice.Viewport.Width;
-            var screenHeight = Starforged.gDevice.Viewport.Height;
+            int sceneWidth, sceneHeight;
+            if (game.CurrScene != null) {
+                sceneWidth = game.CurrScene.Width;
+                sceneHeight = game.CurrScene.Height;
+            } else {
+                sceneWidth = Starforged.gDevice.Viewport.Width;
+                sceneHeight = Starforged.gDevice.Viewport.Height;
+            }
 
-            var Position = new Vector2(r.Next(-screenWidth, screenWidth), r.Next(-screenHeight, screenHeight));
+            var Position = new Vector2(r.Next(-sceneWidth, sceneWidth), r.Next(-sceneHeight, sceneHeight));
 
             // Move spawn position out of viewport
-            if (Position.X > 0) Position.X += screenWidth;
+            if (Position.X > 0) Position.X += sceneWidth;
             else Position.X -= size;
 
-            if (Position.Y > 0) Position.Y += screenHeight;
+            if (Position.Y > 0) Position.Y += sceneHeight;
             else Position.Y -= size;
 
             return Position;

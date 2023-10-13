@@ -69,27 +69,6 @@ namespace Starforged {
             UpdateMovement(gameTime);
 
 
-            // Keep ship on the screen
-            var viewport = Starforged.gDevice.Viewport;
-            var r = SIZE / 2;
-            if (Position.X - r <= 0) {
-                ShipVelocity.X = 0;
-                Position.X = r;
-            }
-            if (Position.X + r >= viewport.Width) {
-                ShipVelocity.X = 0;
-                Position.X = viewport.Width - r;
-            }
-            if (Position.Y - r <= 0) {
-                ShipVelocity.Y = 0;
-                Position.Y = r;
-            }
-            if (Position.Y + r >= viewport.Height) {
-                ShipVelocity.Y = 0;
-                Position.Y = viewport.Height - r;
-            }
-
-
 
             // Update the bounds position
             bounds.Center.X = Position.X;

@@ -10,11 +10,15 @@ namespace Starforged {
     /// </summary>
     public class TitleScreenShip : Ship {
 
+        private Starforged game;
+
         // Animation values
         private double animationTimer;
         private short animationFrame = 1;
 
-        public TitleScreenShip () {
+        public TitleScreenShip (Starforged game) {
+            this.game = game;
+
             // Choose random angle
             Random r = new Random();
             Angle = r.Next(360);
@@ -26,7 +30,6 @@ namespace Starforged {
 
             // Choose random position based on the direction
             Position = getRandomPosition(ShipVelocity);
-
         }
 
         /// <summary>
@@ -34,8 +37,14 @@ namespace Starforged {
         /// </summary>
         /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime) {
-            var windowWidth = Starforged.gDevice.Viewport.Width;
-            var windowHeight = Starforged.gDevice.Viewport.Height;
+            int sceneWidth, sceneHeight;
+            if (game.CurrScene != null) {
+                sceneWidth = game.CurrScene.Width;
+                sceneHeight = game.CurrScene.Height;
+            } else {
+                sceneWidth = Starforged.gDevice.Viewport.Width;
+                sceneHeight = Starforged.gDevice.Viewport.Height;
+            }
 
             //Move in the correct direction
             Position += ShipVelocity * MAXSPEED * (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -44,8 +53,8 @@ namespace Starforged {
             // Return ship back to the screen
             if ((Position.X < -SIZE && ShipVelocity.X < 0) ||
                 (Position.Y < -SIZE && ShipVelocity.Y < 0) ||
-                (Position.X > windowWidth + SIZE && ShipVelocity.X > 0) ||
-                (Position.Y > windowHeight + SIZE && ShipVelocity.Y > 0)) {
+                (Position.X > sceneWidth + SIZE && ShipVelocity.X > 0) ||
+                (Position.Y > sceneHeight + SIZE && ShipVelocity.Y > 0)) {
 
                 Random r = new Random();
                 Angle = r.Next(360);
@@ -83,21 +92,27 @@ namespace Starforged {
         private Vector2 getRandomPosition(Vector2 dir) {
             Random r = new Random();
 
-            var maxX = Starforged.gDevice.Viewport.Width - SIZE;
-            var maxY = Starforged.gDevice.Viewport.Height - SIZE;
+            int sceneWidth, sceneHeight;
+            if (game.CurrScene != null) {
+                sceneWidth = game.CurrScene.Width - SIZE;
+                sceneHeight = game.CurrScene.Height - SIZE;
+            } else {
+                sceneWidth = Starforged.gDevice.Viewport.Width - SIZE;
+                sceneHeight = Starforged.gDevice.Viewport.Height - SIZE;
+            }
 
-            var pos = new Vector2(r.Next(maxX), r.Next(maxY));
+            var pos = new Vector2(r.Next(sceneWidth), r.Next(sceneHeight));
 
             if(dir.X < 0) {
-                pos.X += maxX;
+                pos.X += sceneWidth;
             } else {
-                pos.X -= maxX;
+                pos.X -= sceneWidth;
             }
            
             if(dir.Y < 0) {
-                pos.Y += maxY;
+                pos.Y += sceneHeight;
             } else {
-                pos.Y -= maxY;
+                pos.Y -= sceneHeight;
             }
 
             return pos;

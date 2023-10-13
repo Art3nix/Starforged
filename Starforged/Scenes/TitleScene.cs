@@ -41,6 +41,9 @@ namespace Starforged {
             game.gGraphicsMgr.PreferredBackBufferWidth = 700;
             game.gGraphicsMgr.PreferredBackBufferHeight = 700;
             game.gGraphicsMgr.ApplyChanges();
+
+            Width = 700;
+            Height = 700;
         }
 
         /// <summary>
@@ -53,17 +56,17 @@ namespace Starforged {
 
             // Initialize ships
             ships = new TitleScreenShip[] {
-                    new TitleScreenShip(),
-                    new TitleScreenShip(),
-                    new TitleScreenShip(),
-                    new TitleScreenShip(),
+                    new TitleScreenShip(game),
+                    new TitleScreenShip(game),
+                    new TitleScreenShip(game),
+                    new TitleScreenShip(game),
             };
 
             // Initialize asteroids
             Random r = new Random();
             asteroids = new Asteroid[8];
             for (var i = 0; i < asteroids.Length; i++) {
-                asteroids[i] = new Asteroid(r.Next(4), r.Next(3));
+                asteroids[i] = new Asteroid(game, r.Next(4), r.Next(3));
             }
 
             // Transition times

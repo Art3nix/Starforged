@@ -8,8 +8,12 @@ namespace Starforged
 {
     public class Starforged : Game {
         private SpriteBatch spriteBatch;
-        private Scene currScene;
         private Scene nextScene;
+
+        /// <summary>
+        /// Current scene
+        /// </summary>
+        public Scene CurrScene;
 
         /// <summary>
         /// Graphics device
@@ -70,33 +74,33 @@ namespace Starforged
 
             if(nextScene != null) {
                 // Start transition
-                if(currScene != null && currScene.State == SceneState.Active) currScene.State = SceneState.TransitionOff;
+                if(CurrScene != null && CurrScene.State == SceneState.Active) CurrScene.State = SceneState.TransitionOff;
 
                 // Progress transitioning
-                if(currScene != null && currScene.State == SceneState.TransitionOff) currScene.updateTransitionOff(gameTime);
+                if(CurrScene != null && CurrScene.State == SceneState.TransitionOff) CurrScene.updateTransitionOff(gameTime);
 
                 // Change scene after completing transition and start transitionOn in new scene
-                if (currScene == null || currScene.State == SceneState.Inactive) {
-                    if (currScene != null) currScene.UnloadContent();
+                if (CurrScene == null || CurrScene.State == SceneState.Inactive) {
+                    if (CurrScene != null) CurrScene.UnloadContent();
 
-                    currScene = nextScene;
+                    CurrScene = nextScene;
                     nextScene = null;
 
                     // Update screen size if needed
                     gGraphicsMgr.ApplyChanges();
-                    currScene.Initialize();
-                    currScene.State = SceneState.TransitionOn;
+                    CurrScene.Initialize();
+                    CurrScene.State = SceneState.TransitionOn;
                 }
             } 
 
-            if(currScene.State == SceneState.TransitionOn) {
+            if(CurrScene.State == SceneState.TransitionOn) {
                 // Progress transitionOn
-                currScene.updateTransitionOn(gameTime);
+                CurrScene.updateTransitionOn(gameTime);
             }
 
-            if(currScene != null) {
+            if(CurrScene != null) {
                 // Update current scene
-                currScene.Update(gameTime);
+                CurrScene.Update(gameTime);
             }
 
             base.Update(gameTime);
@@ -107,11 +111,11 @@ namespace Starforged
         /// </summary>
         /// <param name="gameTime">The game time</param>
         protected override void Draw(GameTime gameTime) {
-            if (currScene != null) {
+            if (CurrScene != null) {
                 gDevice.Clear(Color.White);
                 spriteBatch.Begin();
 
-                currScene.Draw(gameTime, spriteBatch);
+                CurrScene.Draw(gameTime, spriteBatch);
 
                 spriteBatch.End();
             }
@@ -125,7 +129,7 @@ namespace Starforged
         /// </summary>
         /// <param name="next"></param>
         public void ChangeScene(Scene next) {
-            if (currScene != next) {
+            if (CurrScene != next) {
                 nextScene = next;
             }
 

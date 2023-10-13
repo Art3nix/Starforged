@@ -18,6 +18,17 @@ namespace Starforged {
 
         protected ContentManager Content;
 
+
+        /// <summary>
+        /// Width of the map
+        /// </summary>
+        public int Width;
+
+        /// <summary>
+        /// Height of the map
+        /// </summary>
+        public int Height;
+
         /// <summary>
         /// State of this scene
         /// </summary>

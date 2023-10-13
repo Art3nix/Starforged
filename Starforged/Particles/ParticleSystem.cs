@@ -12,6 +12,12 @@ namespace Starforged.Particles {
 
         protected static ContentManager content;
 
+
+        /// <summary>
+        /// Transformation matrix for scrolling background
+        /// </summary>
+        public Matrix TransformMatrix;
+
         /// <summary>
         /// All particles
         /// </summary>
@@ -67,6 +73,7 @@ namespace Starforged.Particles {
         public ParticleSystem(Starforged game, int maxParticles) : base(game) {
             particles = new Particle[maxParticles];
             freeParticles = new Queue<int>(maxParticles);
+            TransformMatrix = new Matrix();
             for (int i = 0; i < particles.Length; i++) {
                 particles[i] = new Particle();
                 particles[i].Initialize(Vector2.Zero, Vector2.Zero, Vector2.Zero, Color.White);
@@ -143,8 +150,8 @@ namespace Starforged.Particles {
         /// </summary>
         /// <param name="gameTime"></param>
         public override void Draw(GameTime gameTime) {
-
-            spriteBatch.Begin(blendState: blendState);
+            
+            spriteBatch.Begin(blendState: blendState, transformMatrix: TransformMatrix);
             foreach (Particle p in particles) {
                 if (!p.Active)
                     continue;

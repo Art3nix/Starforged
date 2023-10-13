@@ -13,13 +13,13 @@ namespace Starforged {
         protected Texture2D texture;
 
         // Ship constants
-        protected int MAXSPEED;
-        protected int SIZE;
+        public int MAXSPEED;
+        public int SIZE;
 
         /// <summary>
         /// Flying direction of the ship
         /// </summary>
-        protected Vector2 ShipVelocity;
+        public Vector2 ShipVelocity;
 
         /// <summary>
         /// Angle of the ship
