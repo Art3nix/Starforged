@@ -21,6 +21,19 @@ namespace Starforged {
         /// </summary>
         public Vector2 Position;
 
+        private Color[] colors = new Color[] {
+            Color.Fuchsia,
+            Color.Red,
+            Color.Blue,
+            Color.Crimson,
+            Color.CadetBlue,
+            Color.Magenta,
+        };
+
+        private int colorIndex = 0;
+        private double colorTimer;
+        private Color Color;
+
         /// <summary>
         /// Constructs a new projectile
         /// </summary>
@@ -30,6 +43,7 @@ namespace Starforged {
 
             Position = pos;
             Velocity = dir;
+            Color = colors[colorIndex];
         }
 
         /// <summary>
@@ -52,6 +66,8 @@ namespace Starforged {
             //Move in the correct direction
             Position += Velocity * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+
+
             // Update the bounds position
             bounds.Center.X = Position.X;
             bounds.Center.Y = Position.Y;
@@ -66,9 +82,17 @@ namespace Starforged {
         /// <param name="spriteBatch">The SpriteBatch to render with</param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
 
+            colorTimer += gameTime.ElapsedGameTime.TotalSeconds;
+            if (colorTimer > 0.1) {
+                colorIndex++;
+                if (colorIndex >= colors.Length) colorIndex = 0;
+                Color = colors[colorIndex];
+                colorTimer -= 0.1;
+            }
+
             //Draw the sprite
             spriteBatch.Draw(texture, Position,
-                new Rectangle(0, 0, texture.Width, texture.Height), Color.White, 0f, new Vector2(size / 2, size / 2), 1f, SpriteEffects.None, 0);
+                new Rectangle(0, 0, texture.Width, texture.Height), Color, 0f, new Vector2(size / 2, size / 2), 1f, SpriteEffects.None, 0);
         }
 
     }

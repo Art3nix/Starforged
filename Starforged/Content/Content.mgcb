@@ -266,6 +266,18 @@
 /processorParam:Quality=Best
 /build:music/title_music.mp3
 
+#begin Particles/asteroidExplosion.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Particles/asteroidExplosion.png
+
 #begin projectile.png
 /importer:TextureImporter
 /processor:TextureProcessor

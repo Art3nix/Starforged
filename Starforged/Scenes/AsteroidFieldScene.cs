@@ -6,6 +6,7 @@ using System;
 using Microsoft.Xna.Framework.Audio;
 using System.Reflection.Metadata;
 using System.Collections.Generic;
+using Starforged.Particles;
 
 namespace Starforged {
     public class AsteroidFieldScene : Scene {
@@ -33,6 +34,8 @@ namespace Starforged {
 
         private Hud hud;
 
+        ExplosionParticleSystem explosionParticles;
+
 
         /// <summary>
         /// Constructs the game
@@ -57,6 +60,11 @@ namespace Starforged {
                 asteroids[i] = new Asteroid(r.Next(4), r.Next(3));
             }
 
+            // Initialize particles
+            explosionParticles = new ExplosionParticleSystem(game, 1500);
+            game.Components.Add(explosionParticles);
+
+            // Initialize hud
             hud = new Hud(game);
 
             // Transition times
@@ -137,6 +145,7 @@ namespace Starforged {
                 for (int j = 0; j < projectiles.Count; j++) {
                     if (CollisionHelper.Collides(asteroids[i].Bounds, projectiles[j].Bounds)) {
                         // Particle
+                        explosionParticles.AddExplosion(asteroids[i].Bounds.Center);
 
                         asteroids[i].Respawn();
                         projectiles.RemoveAt(j);
