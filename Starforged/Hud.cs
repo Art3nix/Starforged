@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using SharpDX.Win32;
 
 namespace Starforged {
     public class Hud {
@@ -22,6 +21,14 @@ namespace Starforged {
 
         // Fonts
         private SpriteFont textFont;
+
+        // Constants
+        private const int iconSize = 32;
+        private const int textOffset = 12;
+        private const int iconOffset = 24;
+        private const int padding = 16;
+        private const int maxTextLen = 48;
+        private const int bgWidth = 5 * (iconSize + textOffset + maxTextLen) + 4 * iconOffset + 2 * padding;
 
         public Hud(Starforged g) {
             game = g;
@@ -55,44 +62,26 @@ namespace Starforged {
         /// <param name="gameTime">The game time</param>
         /// <param name="spriteBatch">The SpriteBatch to render with</param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
-            var iconSize = 32;
-            var textOffset = 12;
-            var iconOffset = 24;
-            var padding = 16;
-            var maxTextLen = 48;
-            var bgWidth = 5 * (iconSize + textOffset + maxTextLen) + 4 * iconOffset + 2 * padding;
             
             var bgRectangle = new Rectangle(Starforged.gDevice.Viewport.Width / 2, 0, bgWidth, resourcesBackground.Height);
             spriteBatch.Draw(resourcesBackground, bgRectangle, new Rectangle(0,0,resourcesBackground.Width, resourcesBackground.Height), Color.White, 0f, new Vector2(resourcesBackground.Width / 2, 0), SpriteEffects.None, 0);
 
-            //TODO create method for this
             Vector2 pos = new Vector2(bgRectangle.X - bgWidth / 2, padding);
-            spriteBatch.Draw(fuelIcon, new Rectangle((int)pos.X, (int)pos.Y, iconSize, iconSize), Color.White);
+            printResource(spriteBatch, fuelIcon, ref pos, game.Player.Fuel.ToString());
+            printResource(spriteBatch, jumpFuelIcon, ref pos, game.Player.JumpFuel.ToString());
+            printResource(spriteBatch, componentsIcon, ref pos, game.Player.Components.ToString());
+            printResource(spriteBatch, creditsIcon, ref pos, game.Player.Credits.ToString());
+            printResource(spriteBatch, ammoIcon, ref pos, game.Player.Ammo.ToString());
+
+
+
+        }
+
+        private void printResource(SpriteBatch spriteBatch, Texture2D icon, ref Vector2 pos, string amount) {
+            spriteBatch.Draw(icon, new Rectangle((int)pos.X, (int)pos.Y, iconSize, iconSize), Color.White);
             pos.X += textOffset + iconSize;
-            spriteBatch.DrawString(textFont, game.Player.Fuel.ToString(), pos, Color.White);
+            spriteBatch.DrawString(textFont, amount, pos, Color.White);
             pos.X += iconOffset + maxTextLen;
-
-            spriteBatch.Draw(jumpFuelIcon, new Rectangle((int)pos.X, (int)pos.Y, iconSize, iconSize), Color.White);
-            pos.X += textOffset + iconSize;
-            spriteBatch.DrawString(textFont, game.Player.JumpFuel.ToString(), pos, Color.White);
-            pos.X += iconOffset + maxTextLen;
-
-            spriteBatch.Draw(componentsIcon, new Rectangle((int)pos.X, (int)pos.Y, iconSize, iconSize), Color.White);
-            pos.X += textOffset + iconSize;
-            spriteBatch.DrawString(textFont, game.Player.Components.ToString(), pos, Color.White);
-            pos.X += iconOffset + maxTextLen;
-
-            spriteBatch.Draw(creditsIcon, new Rectangle((int)pos.X, (int)pos.Y, iconSize, iconSize), Color.White);
-            pos.X += textOffset + iconSize;
-            spriteBatch.DrawString(textFont, game.Player.Credits.ToString(), pos, Color.White);
-            pos.X += iconOffset + maxTextLen;
-
-            spriteBatch.Draw(ammoIcon, new Rectangle((int)pos.X, (int)pos.Y, iconSize, iconSize), Color.White);
-            pos.X += textOffset + iconSize;
-            spriteBatch.DrawString(textFont, game.Player.Ammo.ToString(), pos, Color.White);
-            pos.X += iconOffset + maxTextLen;
-
-
 
         }
     }
