@@ -25,5 +25,11 @@ namespace Starforged {
         /// </summary>
         /// <param name="spriteBatch">The SpriteBatch to render with</param>
         public abstract void Draw(SpriteBatch spriteBatch);
+
+        /// <summary>
+        /// Abstract method to draw map of the background
+        /// </summary>
+        /// <param name="spriteBatch">The SpriteBatch to render with</param>
+        public abstract void DrawMapBackground(SpriteBatch spriteBatch, float mapScale);
     }
 }

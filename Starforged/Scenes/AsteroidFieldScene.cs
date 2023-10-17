@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Audio;
 using System.Reflection.Metadata;
 using System.Collections.Generic;
 using Starforged.Particles;
+using SharpDX.Direct3D9;
 
 namespace Starforged {
     public class AsteroidFieldScene : Scene {
@@ -33,8 +34,10 @@ namespace Starforged {
         private KeyboardState priorKeyboardState;
 
         private Hud hud;
+        private Texture2D viewportRectangle;
+        private Texture2D playerIcon;
 
-        ExplosionParticleSystem explosionParticles;
+        private ExplosionParticleSystem explosionParticles;
 
 
         /// <summary>
@@ -95,6 +98,8 @@ namespace Starforged {
 
             // Load Hud
             hud.LoadContent(Content);
+            viewportRectangle = Content.Load<Texture2D>("rectangle");
+            playerIcon = Content.Load<Texture2D>("player");
 
             // Load font
             textFont = Content.Load<SpriteFont>("millennia");
@@ -246,6 +251,9 @@ namespace Starforged {
 
             // Draw HUD
             hud.Draw(gameTime, spriteBatch);
+            // Minimap background
+            drawMinimap(spriteBatch, playerPos);
+
 
             // Fade out transition
             if (State == SceneState.TransitionOff) {
@@ -271,5 +279,58 @@ namespace Starforged {
             if (transitionTimeElapsed > timeTransitionOff) State = SceneState.Inactive;
             else transitionTimeElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
+
+        private void drawMinimap (SpriteBatch spriteBatch, Vector2 viewportCenter) {
+            float mapScale;
+            if (Width >= Height) {
+                mapScale = 1/7f * Starforged.gDevice.Viewport.Width / Width;
+            } else {
+                mapScale = 1/4f * Starforged.gDevice.Viewport.Height / Height;
+            }
+            int mapWidth = (int)(mapScale * Width);
+            int mapHeight = (int)(mapScale * Height);
+
+            // Draw map background
+            background.DrawMapBackground(spriteBatch, mapScale);
+
+            // Draw minimap border
+            for (int i = 0; i < 3; i++) {
+                spriteBatch.Draw(viewportRectangle,
+                                new Rectangle(Starforged.gDevice.Viewport.Width - mapWidth + i,
+                                              Starforged.gDevice.Viewport.Height - mapHeight + i,
+                                              mapWidth - 2*i,
+                                              mapHeight - 2*i),
+                                new Rectangle(0, 0, viewportRectangle.Width, viewportRectangle.Height),
+                                Color.DarkGray);
+            }
+
+
+            // Draw viewport rectangle
+            spriteBatch.Draw(viewportRectangle,
+                            new Rectangle((int)(Starforged.gDevice.Viewport.Width - mapWidth + viewportCenter.X * mapScale),
+                                          (int)(Starforged.gDevice.Viewport.Height - mapHeight + viewportCenter.Y * mapScale),
+                                          (int)(Starforged.gDevice.Viewport.Width * mapScale),
+                                          (int)(Starforged.gDevice.Viewport.Height * mapScale)),
+                            new Rectangle(0, 0, viewportRectangle.Width, viewportRectangle.Height),
+                            Color.White,
+                            0f,
+                            new Vector2(viewportRectangle.Width / 2, viewportRectangle.Height / 2),
+                            SpriteEffects.None,
+                            1);
+
+            // Draw player icon
+            spriteBatch.Draw(playerIcon,
+                             new Vector2((int)(Starforged.gDevice.Viewport.Width - mapWidth + ship.Position.X * mapScale),
+                                         (int)(Starforged.gDevice.Viewport.Height - mapHeight + ship.Position.Y * mapScale)),
+                             new Rectangle(0,0, playerIcon.Width, playerIcon.Height),
+                             Color.White,
+                             ship.Angle,
+                             new Vector2(playerIcon.Width/2,playerIcon.Height/2),
+                             1f,
+                             SpriteEffects.None,
+                             1);
+
+        }
+
     }
 }
