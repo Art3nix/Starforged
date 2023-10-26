@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Starforged {
+
+    [Serializable]
     public class Player {
 
         /// <summary>
@@ -37,12 +35,14 @@ namespace Starforged {
         /// </summary>
         public PlayerShip ship;
 
-        public Player() {
-            Fuel = 100;
-            JumpFuel = 150;
-            Components = 200;
-            Credits = 250;
-            Ammo = 300;
+        public Player() { }
+
+        public Player(int fuel = 100, int jumpFuel = 150, int components = 200, int credits = 250, int ammo = 300) {
+            Fuel = fuel;
+            JumpFuel = jumpFuel;
+            Components = components;
+            Credits = credits;
+            Ammo = ammo;
         }
     }
 }

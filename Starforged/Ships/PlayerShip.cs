@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
 
 namespace Starforged {
 
@@ -31,12 +30,36 @@ namespace Starforged {
         public bool InertiaDampers = true;
 
 
+        public PlayerShip() {
 
+            // Choose random angle
+            Random r = new Random();
+            Angle = r.Next(360);
+            direction = new Vector2((float)Math.Sin(Angle), (float)-Math.Cos(Angle));
 
-        public PlayerShip(ContentManager content, String textureName) {
+            // Choose random position based on the direction
+            Position = new Vector2(Starforged.gDevice.Viewport.Width / 2, Starforged.gDevice.Viewport.Height / 2);
+
+            // Init values
+            MAXSPEED = 150;
+            SIZE = 48;
+            Mass = SIZE; // in tons
+
+            bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
+
+            engineSoundInstance = engineSound.CreateInstance();
+            engineSoundInstance.IsLooped = true;
+            engineSoundInstance.Volume = 0.1f;
+            engineSoundInstance.Play();
+
+        }
+
+        public PlayerShip(ContentManager content = null, String textureName = null) {
 
             // Load textures
-            LoadContent(content, textureName);
+            if (content != null) {
+                LoadContent(content, textureName);
+            }
 
             // Choose random angle
             Random r = new Random();

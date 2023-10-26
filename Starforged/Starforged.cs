@@ -2,7 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Threading;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace Starforged
 {
@@ -31,6 +32,11 @@ namespace Starforged
         public Player Player;
 
         /// <summary>
+        /// Location of the save game file
+        /// </summary>
+        public string SaveGamePath = "stats.xml";
+
+        /// <summary>
         /// Constructs the game
         /// </summary>
         public Starforged() {
@@ -48,7 +54,11 @@ namespace Starforged
         /// </summary>
         protected override void Initialize() {
 
-            Player = new Player();
+            // Load player
+            if (File.Exists(SaveGamePath))
+                Load();
+            else
+                Player = new Player();
 
             base.Initialize();
 
@@ -69,8 +79,10 @@ namespace Starforged
         /// </summary>
         /// <param name="gameTime">The gametime</param>
         protected override void Update(GameTime gameTime) {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) {
+                Save();
                 Exit();
+            }
 
             if(nextScene != null) {
                 // Start transition
@@ -132,6 +144,20 @@ namespace Starforged
             if (CurrScene != next) {
                 nextScene = next;
             }
+
+        }
+
+        public void Save() {
+            TextWriter writer = new StreamWriter(SaveGamePath);
+            XmlSerializer serializer = new XmlSerializer(typeof(Player));
+            serializer.Serialize(writer, Player);
+            writer.Close();
+        }
+
+        public void Load() {
+            TextReader reader = new StreamReader(SaveGamePath);
+            XmlSerializer serializer = new XmlSerializer(typeof(Player));
+            Player = (Player)serializer.Deserialize(reader);
 
         }
     }
