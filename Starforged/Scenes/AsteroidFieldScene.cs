@@ -39,6 +39,14 @@ namespace Starforged {
 
         private ExplosionParticleSystem explosionParticles;
 
+        /// <summary>
+        /// True if map is shown
+        /// </summary>
+        bool showMap = false;
+        private Map map;
+        private Background mapBackground;
+        private int mapPadding = 60;
+
 
         /// <summary>
         /// Constructs the game
@@ -73,6 +81,13 @@ namespace Starforged {
             // Initialize hud
             hud = new Hud(game);
 
+            // Initialize map
+            map = new Map("map.txt");
+            mapBackground = new TiledBackground(game.gGraphicsMgr.PreferredBackBufferWidth - 2 * mapPadding,
+                                                game.gGraphicsMgr.PreferredBackBufferHeight - 2 * mapPadding,
+                                                mapPadding,
+                                                mapPadding);
+
             // Transition times
             timeTransitionOn = 2;
             timeTransitionOff = 4;
@@ -101,6 +116,10 @@ namespace Starforged {
             viewportRectangle = Content.Load<Texture2D>("rectangle");
             playerIcon = Content.Load<Texture2D>("player");
 
+            // Load map
+            map.LoadContent(Content);
+            mapBackground.LoadContent(Content, "background/space_tile");
+
             // Load font
             textFont = Content.Load<SpriteFont>("millennia");
 
@@ -120,6 +139,16 @@ namespace Starforged {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 game.Exit();
 
+            // Show/hide the map
+            if (Keyboard.GetState().IsKeyDown(Keys.M) && priorKeyboardState.IsKeyUp(Keys.M)) {
+                showMap = !showMap;
+            }
+
+            if (showMap) {
+                // don't update the scene if the map is displayed
+                priorKeyboardState = Keyboard.GetState();
+                return;
+            }
 
             // Turn on/off inertia dampers
             if (Keyboard.GetState().IsKeyDown(Keys.Z) && priorKeyboardState.IsKeyUp(Keys.Z)) {
@@ -251,8 +280,13 @@ namespace Starforged {
 
             // Draw HUD
             hud.Draw(gameTime, spriteBatch);
-            // Minimap background
+            // Draw minimap
             drawMinimap(spriteBatch, playerPos);
+
+            // Draw map
+            if(showMap) {
+                drawMap(gameTime, spriteBatch);
+            }
 
 
             // Fade out transition
@@ -289,6 +323,13 @@ namespace Starforged {
             }
             int mapWidth = (int)(mapScale * Width);
             int mapHeight = (int)(mapScale * Height);
+
+            // Draw map text
+            var mapTextScale = 0.6f;
+            var mapText = "Press M to open map";
+            var mapTextPos = new Vector2(Starforged.gDevice.Viewport.Width - mapWidth - textFont.MeasureString(mapText).X*mapTextScale,
+                                         game.GraphicsDevice.Viewport.Height - textFont.LineSpacing*mapTextScale - 2);
+            spriteBatch.DrawString(textFont, "Press M to open map", mapTextPos, Color.White, 0f, new Vector2(0, 0), mapTextScale, SpriteEffects.None, 0);
 
             // Draw map background
             background.DrawMapBackground(spriteBatch, mapScale);
@@ -332,5 +373,25 @@ namespace Starforged {
 
         }
 
+
+        private void drawMap (GameTime gameTime, SpriteBatch spriteBatch) {
+
+            // Draw map background
+            mapBackground.Draw(spriteBatch);
+
+            // Draw map border
+            for (int i = 0; i < 3; i++) {
+                spriteBatch.Draw(viewportRectangle,
+                                new Rectangle(mapPadding,
+                                              mapPadding,
+                                              Starforged.gDevice.Viewport.Width - 2*mapPadding,
+                                              Starforged.gDevice.Viewport.Height - 2*mapPadding),
+                                Color.DarkGray);
+            }
+
+            // Draw map objects
+            map.Draw(gameTime, spriteBatch, mapPadding, mapPadding);
+
+        }
     }
 }

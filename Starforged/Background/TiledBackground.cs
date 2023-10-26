@@ -14,15 +14,19 @@ namespace Starforged {
         private int verticalCount;
         private int sceneWidth;
         private int sceneHeight;
+        private int offsetX;
+        private int offsetY;
 
         /// <summary>
         /// Constructs a new tiled background
         /// </summary>
         /// <param name="screenWidth">The width of the screen</param>
         /// <param name="screenHeight">The height of the screen</param>
-        public TiledBackground(int sceneW = 1920, int sceneH = 1080) {
+        public TiledBackground(int sceneW = 1920, int sceneH = 1080, int offsetX = 0, int offsetY = 0) {
             sceneWidth = sceneW;
             sceneHeight = sceneH;
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
         }
 
         /// <summary>
@@ -44,11 +48,15 @@ namespace Starforged {
 
             for (int i = 0; i < horizontalCount; i++) {
                 for (int j = 0; j < verticalCount; j++) {
+                    int width = texture.Width, height = texture.Height;
+                    if (i == horizontalCount - 1)
+                        width = sceneWidth % texture.Width;
+                    if (j == verticalCount - 1)
+                        height = sceneHeight % texture.Height;
                     spriteBatch.Draw(texture,
-                                     new Rectangle(i * texture.Width,
-                                                   j * texture.Height,
-                                                   texture.Width,
-                                                   texture.Height),
+                                     new Vector2(offsetX + i * texture.Width,
+                                                 offsetY + j * texture.Height),
+                                     new Rectangle(0, 0, width, height),
                                      Color.White);
                 }
             }
@@ -66,10 +74,15 @@ namespace Starforged {
 
             for (int i = 0; i < horizontalCount; i++) {
                 for (int j = 0; j < verticalCount; j++) {
+                    int width = texture.Width, height = texture.Height;
+                    if (i == horizontalCount - 1)
+                        width = sceneWidth % texture.Width;
+                    if (j == verticalCount - 1)
+                        height = sceneHeight % texture.Height;
                     spriteBatch.Draw(texture,
                                      new Vector2(Starforged.gDevice.Viewport.Width - mapWidth + i * mapTileWidth,
                                                  Starforged.gDevice.Viewport.Height - mapHeight + j * mapTileHeight),
-                                     new Rectangle(0,0,texture.Width, texture.Height),
+                                     new Rectangle(0,0,width, height),
                                      Color.White, 0f, new Vector2(0,0), mapScale, SpriteEffects.None, 1);
                 }
             }
