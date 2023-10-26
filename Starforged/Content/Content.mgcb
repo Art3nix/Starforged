@@ -10,6 +10,7 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\MapPipeline\bin\Debug\net6.0\MapPipeline.dll
 
 #---------------------------------- Content ---------------------------------#
 
@@ -228,6 +229,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:icons/resourcesBackground.png
+
+#begin map.tmap
+/importer:MapImporter
+/processor:MapProcessor
+/processorParam:Scale=1
+/build:map.tmap
 
 #begin millennia.spritefont
 /importer:FontDescriptionImporter

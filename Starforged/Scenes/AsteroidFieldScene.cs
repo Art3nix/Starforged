@@ -82,7 +82,6 @@ namespace Starforged {
             hud = new Hud(game);
 
             // Initialize map
-            map = new Map("map.txt");
             mapBackground = new TiledBackground(game.gGraphicsMgr.PreferredBackBufferWidth - 2 * mapPadding,
                                                 game.gGraphicsMgr.PreferredBackBufferHeight - 2 * mapPadding,
                                                 mapPadding,
@@ -117,7 +116,7 @@ namespace Starforged {
             playerIcon = Content.Load<Texture2D>("player");
 
             // Load map
-            map.LoadContent(Content);
+            map = Content.Load<Map>("map");
             mapBackground.LoadContent(Content, "background/space_tile");
 
             // Load font
