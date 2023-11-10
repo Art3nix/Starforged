@@ -27,6 +27,8 @@ namespace Starforged {
         // Music
         private Song backgroundMusic;
 
+        private Crate crate;
+
 
         private float textScale = 0.9f;
         private float growTextIncrement = 0.25f;
@@ -69,6 +71,8 @@ namespace Starforged {
                 asteroids[i] = new Asteroid(game, r.Next(4), r.Next(3));
             }
 
+            crate = new Crate(game, Matrix.Identity);
+
             // Transition times
             timeTransitionOn = 2;
             timeTransitionOff = 4;
@@ -109,7 +113,7 @@ namespace Starforged {
         /// <summary>
         /// Updates the game
         /// </summary>
-        /// <param name="gameTime">The gametime</param>
+        /// <param name="gameTime">The game time</param>
         public override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 game.Exit();
@@ -150,13 +154,19 @@ namespace Starforged {
             foreach (var ship in ships) ship.Draw(gameTime, spriteBatch);
 
             //Draw text
-            var title = "Starforged";
+            var title = "Starf  rged";
             var screenCenter = new Vector2(game.GraphicsDevice.Viewport.Bounds.Width / 2,
                                            game.GraphicsDevice.Viewport.Bounds.Height / 2);
             spriteBatch.DrawString(titleFont, title, new Vector2(screenCenter.X, 100), Color.White, 0f, titleFont.MeasureString(title) / 2, 1f, SpriteEffects.None, 0);
 
             var exitText = "Press Enter to join the universe";
             spriteBatch.DrawString(textFont, exitText, screenCenter, Color.White, 0f, textFont.MeasureString(exitText) / 2, textScale, SpriteEffects.None, 0);
+
+            spriteBatch.End();
+
+            crate.Draw();
+
+            spriteBatch.Begin();
 
             // Fade out transition
             if(State == SceneState.TransitionOff) {

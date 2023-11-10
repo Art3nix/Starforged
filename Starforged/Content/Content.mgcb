@@ -182,18 +182,6 @@
 /processorParam:TextureFormat=Color
 /build:background/black_splash.png
 
-#begin background/space.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:background/space.png
-
 #begin background/space_tile.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -205,6 +193,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:background/space_tile.png
+
+#begin background/space.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:background/space.png
 
 #begin icons/credits.png
 /importer:TextureImporter
@@ -309,6 +309,18 @@
 /processorParam:TextureFormat=Color
 /build:player.png
 
+#begin portal.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:portal.png
+
 #begin projectile.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -344,6 +356,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:ships/ship1.png
+
+#begin spiral.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:spiral.png
 
 #begin title.spritefont
 /importer:FontDescriptionImporter

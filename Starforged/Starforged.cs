@@ -158,6 +158,7 @@ namespace Starforged
             TextReader reader = new StreamReader(SaveGamePath);
             XmlSerializer serializer = new XmlSerializer(typeof(Player));
             Player = (Player)serializer.Deserialize(reader);
+            reader.Close();
 
         }
     }
