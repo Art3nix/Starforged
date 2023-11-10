@@ -41,7 +41,10 @@ namespace Starforged {
         public void LoadContent(ContentManager content) {
             resourcesBackground = content.Load<Texture2D>("icons/resourcesBackground");
             creditsIcon = content.Load<Texture2D>("icons/credits");
-            fuelIcon = jumpFuelIcon = componentsIcon = ammoIcon = creditsIcon;
+            fuelIcon = content.Load<Texture2D>("icons/fuel"); 
+            jumpFuelIcon = content.Load<Texture2D>("icons/jumpfuel"); 
+            componentsIcon = content.Load<Texture2D>("icons/component"); 
+            ammoIcon = content.Load<Texture2D>("icons/ammo"); 
 
             // Load font
             textFont = content.Load<SpriteFont>("millennia");
@@ -66,7 +69,7 @@ namespace Starforged {
             var bgRectangle = new Rectangle(Starforged.gDevice.Viewport.Width / 2, 0, bgWidth, resourcesBackground.Height);
             spriteBatch.Draw(resourcesBackground, bgRectangle, new Rectangle(0,0,resourcesBackground.Width, resourcesBackground.Height), Color.White, 0f, new Vector2(resourcesBackground.Width / 2, 0), SpriteEffects.None, 0);
 
-            Vector2 pos = new Vector2(bgRectangle.X - bgWidth / 2, padding);
+            Vector2 pos = new Vector2(bgRectangle.X - bgWidth / 2 + padding, padding);
             printResource(spriteBatch, fuelIcon, ref pos, game.Player.Fuel.ToString());
             printResource(spriteBatch, jumpFuelIcon, ref pos, game.Player.JumpFuel.ToString());
             printResource(spriteBatch, componentsIcon, ref pos, game.Player.Components.ToString());
