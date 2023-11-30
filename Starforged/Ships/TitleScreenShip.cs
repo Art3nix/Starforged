@@ -26,6 +26,7 @@ namespace Starforged {
 
             // Init values
             MAXSPEED = 150;
+            MAXANGSPEED = 10;
             SIZE = 48;
 
             // Choose random position based on the direction

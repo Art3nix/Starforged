@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Starforged {
-    public class Crate {
+    public class Portal {
 
         private VertexBuffer vertexBuffer;
 
@@ -19,7 +19,7 @@ namespace Starforged {
 
         private Texture2D texture;
 
-        public Crate(Starforged game, Matrix world) {
+        public Portal (Starforged game, Matrix world) {
             this.game = game;
             this.texture = game.Content.Load<Texture2D>("portal");
             InitializeVertices();

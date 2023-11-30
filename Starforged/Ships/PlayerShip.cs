@@ -42,6 +42,7 @@ namespace Starforged {
 
             // Init values
             MAXSPEED = 150;
+            MAXANGSPEED = 50;
             SIZE = 48;
             Mass = SIZE; // in tons
 
@@ -71,6 +72,7 @@ namespace Starforged {
 
             // Init values
             MAXSPEED = 150;
+            MAXANGSPEED = 10;
             SIZE = 48;
             Mass = SIZE; // in tons
 
@@ -159,12 +161,19 @@ namespace Starforged {
             }
 
             angVelocity += angAcc * time;
+            ShipVelocity += acc * time;
+
+            // Clamp values
+            ShipVelocity.X = Math.Clamp(ShipVelocity.X, -MAXSPEED, +MAXSPEED);
+            ShipVelocity.Y = Math.Clamp(ShipVelocity.Y, -MAXSPEED, +MAXSPEED);
+            angVelocity = Math.Clamp(angVelocity, -MAXANGSPEED, +MAXANGSPEED);
+
+
             Angle += angVelocity * time;
             direction.X = (float)Math.Sin(Angle);
             direction.Y = (float)-Math.Cos(Angle);
-
-            ShipVelocity += acc * time;
             Position += ShipVelocity * time;
+
 
             engineSoundInstance.Pitch = pitch;
 

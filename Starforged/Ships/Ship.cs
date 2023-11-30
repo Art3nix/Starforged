@@ -14,6 +14,7 @@ namespace Starforged {
 
         // Ship constants
         public int MAXSPEED;
+        public int MAXANGSPEED;
         public int SIZE;
 
         /// <summary>

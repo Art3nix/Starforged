@@ -27,7 +27,7 @@ namespace Starforged {
         // Music
         private Song backgroundMusic;
 
-        private Crate crate;
+        private Portal crate;
 
 
         private float textScale = 0.9f;
@@ -71,7 +71,7 @@ namespace Starforged {
                 asteroids[i] = new Asteroid(game, r.Next(4), r.Next(3));
             }
 
-            crate = new Crate(game, Matrix.Identity);
+            crate = new Portal(game, Matrix.Identity);
 
             // Transition times
             timeTransitionOn = 2;
@@ -120,7 +120,7 @@ namespace Starforged {
 
 
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {
-                game.ChangeScene(new AsteroidFieldScene(game));
+                game.ChangeScene(new EnemyShipScene(game));
             }
 
             // Update ships
