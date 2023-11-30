@@ -21,6 +21,11 @@ namespace Starforged {
         /// </summary>
         public Vector2 Position;
 
+        /// <summary>
+        /// Damage of the projectile
+        /// </summary>
+        public int Damage;
+
         private Color[] colors = new Color[] {
             Color.Fuchsia,
             Color.Red,
@@ -37,12 +42,13 @@ namespace Starforged {
         /// <summary>
         /// Constructs a new projectile
         /// </summary>
-        public Projectile(ContentManager content, Vector2 pos, Vector2 dir) {
+        public Projectile(ContentManager content, Vector2 pos, Vector2 dir, int damage) {
 
             LoadContent(content);
 
             Position = pos;
             Velocity = dir;
+            Damage = damage;
             Color = colors[colorIndex];
         }
 

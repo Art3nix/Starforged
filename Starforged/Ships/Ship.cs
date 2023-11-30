@@ -33,6 +33,16 @@ namespace Starforged {
         public Vector2 Position;
 
         /// <summary>
+        /// Health points of the ship
+        /// </summary>
+        public int Health;
+
+        /// <summary>
+        /// Damage of the ship's projectiles
+        /// </summary>
+        public int Damage;
+
+        /// <summary>
         /// Sound of the engines
         /// </summary>
         protected SoundEffect engineSound;

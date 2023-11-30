@@ -24,10 +24,13 @@ namespace Starforged {
             Angle = r.Next(360);
             ShipVelocity = new Vector2((float)Math.Sin(Angle), (float)-Math.Cos(Angle));
 
+
             // Init values
             MAXSPEED = 150;
             MAXANGSPEED = 10;
             SIZE = 48;
+            Health = 80;
+            Damage = 0;
 
             // Choose random position based on the direction
             Position = getRandomPosition(ShipVelocity);

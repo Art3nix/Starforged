@@ -70,6 +70,8 @@ namespace Starforged {
             MAXANGSPEED = 10;
             SIZE = 48;
             Mass = SIZE; // in tons
+            Health = 40;
+            Damage = 15;
 
             // Choose random position
             Position = getRandomPosition();
@@ -202,16 +204,15 @@ namespace Starforged {
                 sceneHeight = Starforged.gDevice.Viewport.Height;
             }
 
-            //var Position = new Vector2(r.Next(-sceneWidth, sceneWidth), r.Next(-sceneHeight, sceneHeight));
-            var Position = new Vector2(r.Next(0, Starforged.gDevice.Viewport.Width), r.Next(0, Starforged.gDevice.Viewport.Height));
+            var Position = new Vector2(r.Next(-sceneWidth, sceneWidth), r.Next(-sceneHeight, sceneHeight));
 
             // Move spawn position out of viewport
-            /*if (Position.X > 0) Position.X += sceneWidth;
+            if (Position.X > 0) Position.X += sceneWidth;
             else Position.X -= SIZE;
 
             if (Position.Y > 0) Position.Y += sceneHeight;
             else Position.Y -= SIZE;
-            */
+            
             return Position;
         }
 
@@ -230,6 +231,10 @@ namespace Starforged {
         public bool TargetInRange() {
             return (Math.Pow(Target.Bounds.Center.X - bounds.Center.X, 2) +
                    Math.Pow(Target.Bounds.Center.Y - bounds.Center.Y, 2)) < 160000; //400px^2
+        }
+
+        public void Despawn() {
+            Position = new Vector2(-1000, -1000);
         }
     }
 }

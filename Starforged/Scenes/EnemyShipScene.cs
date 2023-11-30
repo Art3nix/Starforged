@@ -170,16 +170,14 @@ namespace Starforged {
                                                   (float)(enemies[i].Position.Y + projOffset * -Math.Cos(enemies[i].Angle)));
                     Vector2 projDir = new Vector2((float)Math.Sin(enemies[i].Angle),
                                                   (float)-Math.Cos(enemies[i].Angle));
-                    Projectile proj = new Projectile(Content, projPos, projDir);
+                    Projectile proj = new Projectile(Content, projPos, projDir, enemies[i].Damage);
                     enemyProjectiles.Add(proj);
                     enemies[i].ShootDelay = 0;
                 }
 
                 // Collision between two enemies
                 for (int j = i + 1; j < enemies.Length; j++) {
-                    if (CollisionHelper.handleElasticCollision(enemies[i], enemies[j])) {
-                        collisionSound.Play();
-                    }
+                    CollisionHelper.handleElasticCollision(enemies[i], enemies[j]);
                 }
 
                 // Collision between an enemy and a ship
@@ -191,7 +189,11 @@ namespace Starforged {
                 for (int j = 0; j < projectiles.Count; j++) {
                     if (CollisionHelper.Collides(enemies[i].Bounds, projectiles[j].Bounds)) {
                         // Particle
-                        explosionParticles.AddExplosion(enemies[i].Bounds.Center);
+                        enemies[i].Health -= projectiles[j].Damage;
+                        if (enemies[i].Health <= 0) {
+                            explosionParticles.AddExplosion(enemies[i].Bounds.Center);
+                            enemies[i].Despawn();
+                        }
 
                         projectiles.RemoveAt(j);
                     }
@@ -208,7 +210,11 @@ namespace Starforged {
             for (int j = 0; j < enemyProjectiles.Count; j++) {
                 if (CollisionHelper.Collides(ship.Bounds, enemyProjectiles[j].Bounds)) {
                     // Particle
-                    explosionParticles.AddExplosion(ship.Bounds.Center);
+                    ship.Health -= enemyProjectiles[j].Damage;
+                    if (ship.Health <= 0) {
+                        explosionParticles.AddExplosion(ship.Bounds.Center);
+                        game.ChangeScene(new TitleScene(game));
+                    }
 
                     enemyProjectiles.RemoveAt(j);
                 }
@@ -224,7 +230,7 @@ namespace Starforged {
                                               (float)(ship.Position.Y + projOffset * -Math.Cos(ship.Angle)));
                 Vector2 projDir = new Vector2((float)Math.Sin(ship.Angle),
                                               (float)-Math.Cos(ship.Angle));
-                Projectile proj = new Projectile(Content, projPos, projDir);
+                Projectile proj = new Projectile(Content, projPos, projDir, ship.Damage);
                 projectiles.Add(proj);
                 game.Player.Ammo--;
             }

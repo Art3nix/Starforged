@@ -215,7 +215,7 @@ namespace Starforged {
                                               (float)(ship.Position.Y + projOffset * -Math.Cos(ship.Angle)));
                 Vector2 projDir = new Vector2((float)Math.Sin(ship.Angle),
                                               (float)-Math.Cos(ship.Angle));
-                Projectile proj = new Projectile(Content, projPos, projDir);
+                Projectile proj = new Projectile(Content, projPos, projDir, ship.Damage);
                 projectiles.Add(proj);
                 game.Player.Ammo--;
             }
