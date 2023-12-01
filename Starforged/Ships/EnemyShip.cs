@@ -48,6 +48,9 @@ namespace Starforged {
             MAXANGSPEED = 5;
             SIZE = 48;
             Mass = SIZE; // in tons
+            Health = 40;
+            MaxHealth = 40;
+            Damage = 15;
 
 
             bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
@@ -71,6 +74,7 @@ namespace Starforged {
             SIZE = 48;
             Mass = SIZE; // in tons
             Health = 40;
+            MaxHealth = 40;
             Damage = 15;
 
             // Choose random position
@@ -234,6 +238,7 @@ namespace Starforged {
         }
 
         public void Despawn() {
+            EnteredBounds = false;
             Position = new Vector2(-1000, -1000);
         }
     }

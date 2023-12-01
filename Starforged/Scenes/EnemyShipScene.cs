@@ -7,7 +7,6 @@ using Microsoft.Xna.Framework.Audio;
 using System.Reflection.Metadata;
 using System.Collections.Generic;
 using Starforged.Particles;
-using SharpDX.Direct3D9;
 
 namespace Starforged {
     public class EnemyShipScene : Scene {
@@ -22,8 +21,9 @@ namespace Starforged {
         // Ships
         private PlayerShip ship;
 
-        // Asteroids
+        // Enemies
         private EnemyShip[] enemies;
+        private int enemiesLeft;
 
         // Ship projectiles
         private List<Projectile> projectiles = new List<Projectile>();
@@ -37,6 +37,8 @@ namespace Starforged {
         private Hud hud;
         private Texture2D viewportRectangle;
         private Texture2D playerIcon;
+        private Texture2D red;
+        private Texture2D green;
 
         private ExplosionParticleSystem explosionParticles;
 
@@ -48,6 +50,12 @@ namespace Starforged {
         private Background mapBackground;
         private int mapPadding = 60;
 
+        private SceneState prevState;
+        private bool fullyTransitioned = false;
+        private int introTransitionTimeOn = 1;
+        private int introTransitionTimeDisplay = 2;
+        private int introTransitionTimeOff = 2;
+        private float introTransitionElapsed = 0;
 
         /// <summary>
         /// Constructs the game
@@ -81,6 +89,8 @@ namespace Starforged {
                                                 mapPadding,
                                                 mapPadding);
 
+            prevState = State;
+
             // Transition times
             timeTransitionOn = 2;
             timeTransitionOff = 4;
@@ -92,7 +102,8 @@ namespace Starforged {
             ship = new PlayerShip(Content, "ships/ship1");
 
             // Initialize enemies
-            enemies = new EnemyShip[40];
+            enemiesLeft = 1;
+            enemies = new EnemyShip[enemiesLeft];
             for (var i = 0; i < enemies.Length; i++) {
                 enemies[i] = new EnemyShip(Content, "ships/enemyship", ship, game);
             }
@@ -115,6 +126,8 @@ namespace Starforged {
             hud.LoadContent(Content);
             viewportRectangle = Content.Load<Texture2D>("rectangle");
             playerIcon = Content.Load<Texture2D>("player");
+            red = Content.Load<Texture2D>("utils/red");
+            green = Content.Load<Texture2D>("utils/green");
 
             // Load map
             map = Content.Load<Map>("map");
@@ -135,6 +148,16 @@ namespace Starforged {
         public override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 game.Exit();
+
+            if (enemiesLeft == 0) {
+                // End scene
+                return;
+            }
+
+            // Scene has fully transitioned - Start game
+            if (prevState == SceneState.TransitionOn && State == SceneState.Active) {
+                fullyTransitioned = true;
+            }
 
             // Show/hide the map
             if (Keyboard.GetState().IsKeyDown(Keys.M) && priorKeyboardState.IsKeyUp(Keys.M)) {
@@ -162,7 +185,13 @@ namespace Starforged {
 
             // Update enemies
             for (int i = 0; i < enemies.Length; i++) {
+
+                // Skip despawned enemies
+                if (enemies[i].Health <= 0) continue;
+
+
                 enemies[i].Update(gameTime);
+
 
                 if (enemies[i].TargetInRange() && enemies[i].ShootDelay >= 5f) {
                     float projOffset = 24;
@@ -193,6 +222,7 @@ namespace Starforged {
                         if (enemies[i].Health <= 0) {
                             explosionParticles.AddExplosion(enemies[i].Bounds.Center);
                             enemies[i].Despawn();
+                            enemiesLeft--;
                         }
 
                         projectiles.RemoveAt(j);
@@ -235,7 +265,11 @@ namespace Starforged {
                 game.Player.Ammo--;
             }
 
+            if (fullyTransitioned)
+                introTransitionElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             priorKeyboardState = Keyboard.GetState();
+            prevState = State;
         }
 
         private void KeepShipInBounds(Ship ship) {
@@ -256,6 +290,7 @@ namespace Starforged {
                 ship.ShipVelocity.Y = 0;
                 ship.Position.Y = Height - r;
             }
+
         }
 
         /// <summary>
@@ -288,10 +323,16 @@ namespace Starforged {
             // Draw enemies
             foreach (var enemy in enemies) {
                 enemy.Draw(gameTime, spriteBatch);
+                if (enemy.Health < enemy.MaxHealth) {
+                    drawHealth(enemy, spriteBatch);
+                }
             }
 
             // Draw ship
             ship.Draw(gameTime, spriteBatch);
+            if (ship.Health < ship.MaxHealth) {
+                drawHealth(ship, spriteBatch);
+            }
 
             // Update projectile texture
             foreach (var p in projectiles) p.Draw(gameTime, spriteBatch);
@@ -302,6 +343,15 @@ namespace Starforged {
 
             // Static objects batch
             spriteBatch.Begin();
+
+            // Enemies left text
+            var enemiesScale = 0.8f;
+            var enemiesText = "Enemies left: ";
+            var enemiesPos = new Vector2(10, 10);
+            spriteBatch.DrawString(textFont, enemiesText, enemiesPos, Color.White, 0f, new Vector2(0, 0), enemiesScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(textFont, enemiesLeft.ToString(), enemiesPos + new Vector2(textFont.MeasureString(enemiesText).X * enemiesScale, 0), Color.White, 0f, new Vector2(0, 0), enemiesScale, SpriteEffects.None, 0);
+
+
 
             // Draw text
             var dampersScale = 0.8f;
@@ -319,8 +369,34 @@ namespace Starforged {
             drawMinimap(spriteBatch, playerPos);
 
             // Draw map
-            if(showMap) {
+            if (showMap) {
                 drawMap(gameTime, spriteBatch);
+            }
+
+            // Scene fully transitioned - Start game
+            if (fullyTransitioned) {
+                // Draw fade in/out introduction text
+                float alpha = (float)Math.Pow(introTransitionElapsed / introTransitionTimeOn, 2);
+                if (introTransitionElapsed > (introTransitionTimeOn + introTransitionTimeDisplay)) {
+                    var elapsedOff = introTransitionElapsed - (introTransitionTimeDisplay + introTransitionTimeOn);
+                    alpha = 1 - (float)Math.Pow(elapsedOff / introTransitionTimeOff, 2);
+                }
+                var introScale = 1.5f;
+                var introText = "Destroy all enemies";
+                spriteBatch.DrawString(textFont, introText, screenCenter, Color.White * alpha, 0f, textFont.MeasureString(introText) / 2, introScale, SpriteEffects.None, 0);
+
+            }
+
+            // End game
+            if (enemiesLeft == 0 || ship.Health <= 0) {
+                var endScale = 2f;
+                String endText;
+                if (ship.Health > 0)
+                    endText = "Victory";
+                else
+                    endText = "Game Over";
+                spriteBatch.DrawString(textFont, endText, screenCenter, Color.White, 0f, textFont.MeasureString(endText) / 2, endScale, SpriteEffects.None, 0);
+                game.ChangeScene(new TitleScene(game));
             }
 
 
@@ -405,6 +481,19 @@ namespace Starforged {
                              1f,
                              SpriteEffects.None,
                              1);
+
+        }
+
+        private void drawHealth(Ship ship, SpriteBatch spriteBatch) {
+            float healthPercentage = ship.Health / ship.MaxHealth;
+            var overlap = 5;
+            var barLength = ship.SIZE + overlap*2;
+            var barHeight = 8;
+
+            Rectangle posRed = new Rectangle((int)ship.Position.X - ship.SIZE/2, (int)ship.Position.Y + ship.SIZE, barLength, barHeight);
+            Rectangle posGreen = new Rectangle((int)ship.Position.X - ship.SIZE / 2, (int)ship.Position.Y + ship.SIZE, (int)(barLength*healthPercentage), barHeight);
+            spriteBatch.Draw(red, posRed, Color.Red);
+            spriteBatch.Draw(green, posGreen, Color.Green);
 
         }
 

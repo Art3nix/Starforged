@@ -46,6 +46,7 @@ namespace Starforged {
             SIZE = 48;
             Mass = SIZE; // in tons
             Health = 100;
+            MaxHealth = 100;
             Damage = 20;
 
             bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
@@ -78,6 +79,7 @@ namespace Starforged {
             SIZE = 48;
             Mass = SIZE; // in tons
             Health = 100;
+            MaxHealth = 100;
             Damage = 20;
 
             bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);

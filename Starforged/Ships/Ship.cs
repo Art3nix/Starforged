@@ -35,7 +35,12 @@ namespace Starforged {
         /// <summary>
         /// Health points of the ship
         /// </summary>
-        public int Health;
+        public float Health;
+
+        /// <summary>
+        /// Maximum health of the ship
+        /// </summary>
+        public int MaxHealth;
 
         /// <summary>
         /// Damage of the ship's projectiles

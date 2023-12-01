@@ -42,7 +42,6 @@ namespace Starforged {
         public TitleScene(Starforged g) : base(g) {
             game.gGraphicsMgr.PreferredBackBufferWidth = 700;
             game.gGraphicsMgr.PreferredBackBufferHeight = 700;
-            game.gGraphicsMgr.ApplyChanges();
 
             Width = 700;
             Height = 700;

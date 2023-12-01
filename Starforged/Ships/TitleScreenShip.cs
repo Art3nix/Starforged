@@ -30,6 +30,7 @@ namespace Starforged {
             MAXANGSPEED = 10;
             SIZE = 48;
             Health = 80;
+            MaxHealth = 80;
             Damage = 0;
 
             // Choose random position based on the direction
