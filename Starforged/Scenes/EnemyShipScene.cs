@@ -102,7 +102,7 @@ namespace Starforged {
             ship = new PlayerShip(Content, "ships/ship1");
 
             // Initialize enemies
-            enemiesLeft = 1;
+            enemiesLeft = 12;
             enemies = new EnemyShip[enemiesLeft];
             for (var i = 0; i < enemies.Length; i++) {
                 enemies[i] = new EnemyShip(Content, "ships/enemyship", ship, game);
