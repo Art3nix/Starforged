@@ -81,7 +81,7 @@ namespace Starforged {
             // Initialize hud
             hud = new Hud(game);
 
-            // Initialize map
+            // Initialize map background
             mapBackground = new TiledBackground(game.gGraphicsMgr.PreferredBackBufferWidth - 2 * mapPadding,
                                                 game.gGraphicsMgr.PreferredBackBufferHeight - 2 * mapPadding,
                                                 mapPadding,
@@ -92,6 +92,9 @@ namespace Starforged {
             timeTransitionOff = 4;
 
             base.Initialize();
+
+            // Initialize map
+            map.Initialize(game, mapPadding, mapPadding);
 
 
             // Initialize ships
@@ -117,6 +120,7 @@ namespace Starforged {
 
             // Load map
             map = Content.Load<Map>("map");
+            map.LoadContent(Content);
             mapBackground.LoadContent(Content, "background/space_tile");
 
             // Load font
@@ -145,6 +149,7 @@ namespace Starforged {
 
             if (showMap) {
                 // don't update the scene if the map is displayed
+                map.Update();
                 priorKeyboardState = Keyboard.GetState();
                 return;
             }
@@ -389,7 +394,7 @@ namespace Starforged {
             }
 
             // Draw map objects
-            map.Draw(gameTime, spriteBatch, mapPadding, mapPadding);
+            map.Draw(gameTime, spriteBatch);
 
         }
     }

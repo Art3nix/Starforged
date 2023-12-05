@@ -42,6 +42,8 @@ namespace Starforged {
 
         private ExplosionParticleSystem explosionParticles;
 
+        private int enemyCount;
+
         /// <summary>
         /// True if map is shown
         /// </summary>
@@ -60,9 +62,11 @@ namespace Starforged {
         /// <summary>
         /// Constructs the game
         /// </summary>
-        public EnemyShipScene(Starforged g) : base(g) {
+        public EnemyShipScene(Starforged g, int enemyCount) : base(g) {
             game.gGraphicsMgr.PreferredBackBufferWidth = 1800;
             game.gGraphicsMgr.PreferredBackBufferHeight = 1000;
+
+            this.enemyCount = enemyCount;
 
             Width = 2600;
             Height = 2600;
@@ -83,7 +87,7 @@ namespace Starforged {
             // Initialize hud
             hud = new Hud(game);
 
-            // Initialize map
+            // Initialize map background
             mapBackground = new TiledBackground(game.gGraphicsMgr.PreferredBackBufferWidth - 2 * mapPadding,
                                                 game.gGraphicsMgr.PreferredBackBufferHeight - 2 * mapPadding,
                                                 mapPadding,
@@ -98,11 +102,15 @@ namespace Starforged {
             base.Initialize();
 
 
+            // Initialize map
+            map.Initialize(game, mapPadding, mapPadding);
+
+
             // Initialize ships
             ship = new PlayerShip(Content, "ships/ship1");
 
             // Initialize enemies
-            enemiesLeft = 12;
+            enemiesLeft = enemyCount;
             enemies = new EnemyShip[enemiesLeft];
             for (var i = 0; i < enemies.Length; i++) {
                 enemies[i] = new EnemyShip(Content, "ships/enemyship", ship, game);
@@ -131,6 +139,7 @@ namespace Starforged {
 
             // Load map
             map = Content.Load<Map>("map");
+            map.LoadContent(Content);
             mapBackground.LoadContent(Content, "background/space_tile");
 
             // Load font
@@ -166,6 +175,7 @@ namespace Starforged {
 
             if (showMap) {
                 // don't update the scene if the map is displayed
+                map.Update();
                 priorKeyboardState = Keyboard.GetState();
                 return;
             }
@@ -514,7 +524,7 @@ namespace Starforged {
             }
 
             // Draw map objects
-            map.Draw(gameTime, spriteBatch, mapPadding, mapPadding);
+            map.Draw(gameTime, spriteBatch);
 
         }
     }

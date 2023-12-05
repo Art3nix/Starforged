@@ -10,4 +10,9 @@
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Starforged">
+      <HintPath>..\Starforged\bin\Debug\net6.0-windows\Starforged.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

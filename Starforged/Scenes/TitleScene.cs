@@ -119,7 +119,7 @@ namespace Starforged {
 
 
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {
-                game.ChangeScene(new EnemyShipScene(game));
+                game.ChangeScene(new EnemyShipScene(game, 12));
             }
 
             // Update ships

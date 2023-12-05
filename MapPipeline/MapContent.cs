@@ -1,13 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Starforged;
 
 namespace MapPipeline {
 
@@ -34,6 +29,16 @@ namespace MapPipeline {
         /// The data which tile to draw on the map
         /// </summary>
         public int[] MapData;
+
+        /// <summary>
+        /// The objects on the map
+        /// </summary>
+        public Planet[] planets;
+
+        /// <summary>
+        /// The game
+        /// </summary>
+        public Starforged.Starforged game;
 
         /// <summary>
         /// The name of the file containing map data
