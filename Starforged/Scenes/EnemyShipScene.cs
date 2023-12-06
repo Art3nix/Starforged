@@ -110,7 +110,7 @@ namespace Starforged {
 
 
             // Initialize ships
-            ship = new PlayerShip(Content, "ships/ship1");
+            ship = new PlayerShip(game, Content, "ships/ship1");
 
             // Initialize enemies
             enemiesLeft = enemyCount;

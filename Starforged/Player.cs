@@ -8,7 +8,7 @@ namespace Starforged {
         /// <summary>
         /// The number of regular fuel the player has
         /// </summary>
-        public int Fuel;
+        public float Fuel;
 
         /// <summary>
         /// The number of hyper drive fuel the player has
@@ -41,7 +41,7 @@ namespace Starforged {
         public PlayerShip ship;
 
         public Player () {
-            Fuel = 100;
+            Fuel = 100f;
             JumpFuel = 150;
             Components = 200;
             Credits = 250;
@@ -50,7 +50,7 @@ namespace Starforged {
 
         }
 
-        public Player(int fuel, int jumpFuel, int components, int credits, int ammo) {
+        public Player(float fuel, int jumpFuel, int components, int credits, int ammo) {
             Fuel = fuel;
             JumpFuel = jumpFuel;
             Components = components;

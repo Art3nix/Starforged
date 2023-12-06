@@ -63,7 +63,7 @@ namespace Starforged
             if (File.Exists(SaveGamePath)) {
                 Load();
             } else {
-                Player = new Player(100, 150, 200, 250, 300);
+                Player = new Player(100f, 150, 200, 250, 300);
                 Save();
             }
 

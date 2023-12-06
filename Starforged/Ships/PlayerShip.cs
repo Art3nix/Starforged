@@ -23,14 +23,20 @@ namespace Starforged {
         // Ship constants
         private float LIN_ACCELERATION = 70;
         private float ANG_ACCELERATION = 2.5f;
+        private float ANG_FCONSUMPTION = 0.15f;
+        private float LIN_FCONSUMPTION = 0.4f;
 
         private SoundEffectInstance engineSoundInstance;
 
         // Whether inertia dampers are turned on or off
         public bool InertiaDampers = true;
 
+        private Starforged game;
+
 
         public PlayerShip() {
+
+            game = null;
 
             // Choose random angle
             Random r = new Random();
@@ -58,7 +64,9 @@ namespace Starforged {
 
         }
 
-        public PlayerShip(ContentManager content = null, String textureName = null) {
+        public PlayerShip(Starforged g, ContentManager content = null, String textureName = null) {
+
+            game = g;
 
             // Load textures
             if (content != null) {
@@ -133,6 +141,7 @@ namespace Starforged {
         public void UpdateMovement(GameTime gameTime) {
             KeyboardState kbState = Keyboard.GetState();
             float time = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float fuelConsumed = 0;
 
             Vector2 acc = new Vector2(0, 0);
             float angAcc = 0;
@@ -142,32 +151,49 @@ namespace Starforged {
 
             if (kbState.IsKeyDown(Keys.Left)) {
                 angAcc -= ANG_ACCELERATION;
+                fuelConsumed += ANG_FCONSUMPTION * time;
             } else if (kbState.IsKeyDown(Keys.Right)) {
                 angAcc += ANG_ACCELERATION;
+                fuelConsumed += ANG_FCONSUMPTION * time;
             } else if (InertiaDampers) {
                 // Slow down angular movement if dampers are on
                 if (angVelocity > 0) {
                     angAcc -= ANG_ACCELERATION;
+                    fuelConsumed += ANG_FCONSUMPTION * time;
                 } else if (angVelocity < 0) {
                     angAcc += ANG_ACCELERATION;
+                    fuelConsumed += ANG_FCONSUMPTION * time;
                 }
 
             }
 
             if (kbState.IsKeyDown(Keys.Up)) {
                 acc += direction * LIN_ACCELERATION;
+                fuelConsumed += LIN_FCONSUMPTION * time;
                 pitch = .5f;
             }
             else if (kbState.IsKeyDown(Keys.Down)) {
                 acc -= direction * LIN_ACCELERATION;
+                fuelConsumed += LIN_FCONSUMPTION * time;
                 pitch = -.75f;
             } else if (InertiaDampers && ShipVelocity != Vector2.Zero) {
                 // Slow down ship if dampers are on
+                if (Vector2.Distance(ShipVelocity, Vector2.Zero) > Math.Sqrt(2)) {
+                    // do not consume fuel if ship almost not moving
+                    fuelConsumed += LIN_FCONSUMPTION * time;
+                    
+                }
                 acc += (-Vector2.Normalize(ShipVelocity)) * LIN_ACCELERATION;
             }
 
-            angVelocity += angAcc * time;
-            ShipVelocity += acc * time;
+            if (game.Player.Fuel > 0f) {
+                game.Player.Fuel -= fuelConsumed;
+
+                angVelocity += angAcc * time;
+                ShipVelocity += acc * time;
+            } else {
+                game.Player.Fuel = 0f;
+            }
 
             // Clamp values
             ShipVelocity.X = Math.Clamp(ShipVelocity.X, -MAXSPEED, +MAXSPEED);

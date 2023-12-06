@@ -70,7 +70,8 @@ namespace Starforged {
             spriteBatch.Draw(resourcesBackground, bgRectangle, new Rectangle(0,0,resourcesBackground.Width, resourcesBackground.Height), Color.White, 0f, new Vector2(resourcesBackground.Width / 2, 0), SpriteEffects.None, 0);
 
             Vector2 pos = new Vector2(bgRectangle.X - bgWidth / 2 + padding, padding);
-            printResource(spriteBatch, fuelIcon, ref pos, game.Player.Fuel.ToString());
+            var fuel = game.Player.Fuel > 20f ? game.Player.Fuel.ToString("0") : game.Player.Fuel.ToString("0.0");
+            printResource(spriteBatch, fuelIcon, ref pos, fuel);
             printResource(spriteBatch, jumpFuelIcon, ref pos, game.Player.JumpFuel.ToString());
             printResource(spriteBatch, componentsIcon, ref pos, game.Player.Components.ToString());
             printResource(spriteBatch, creditsIcon, ref pos, game.Player.Credits.ToString());
