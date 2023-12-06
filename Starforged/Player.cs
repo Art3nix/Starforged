@@ -31,18 +31,32 @@ namespace Starforged {
         public int Ammo;
 
         /// <summary>
+        /// Which level the player is on
+        /// </summary>
+        public int Level;
+
+        /// <summary>
         /// The currently used ship
         /// </summary>
         public PlayerShip ship;
 
-        public Player() { }
+        public Player () {
+            Fuel = 100;
+            JumpFuel = 150;
+            Components = 200;
+            Credits = 250;
+            Ammo = 300;
+            Level = 1;
 
-        public Player(int fuel = 100, int jumpFuel = 150, int components = 200, int credits = 250, int ammo = 300) {
+        }
+
+        public Player(int fuel, int jumpFuel, int components, int credits, int ammo) {
             Fuel = fuel;
             JumpFuel = jumpFuel;
             Components = components;
             Credits = credits;
             Ammo = ammo;
+            Level = 1;
         }
     }
 }

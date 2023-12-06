@@ -40,8 +40,8 @@ namespace Starforged {
         /// Constructs the game
         /// </summary>
         public TitleScene(Starforged g) : base(g) {
-            game.gGraphicsMgr.PreferredBackBufferWidth = 700;
-            game.gGraphicsMgr.PreferredBackBufferHeight = 700;
+            WindowWidth = 700;
+            WindowHeight = 700;
 
             Width = 700;
             Height = 700;
@@ -53,7 +53,7 @@ namespace Starforged {
         public override void Initialize() {
 
             // Initialize background
-            background = new TiledBackground(game.GraphicsDevice.Viewport.Width, game.GraphicsDevice.Viewport.Height);
+            background = new TiledBackground(WindowWidth, WindowHeight);
 
             // Initialize ships
             ships = new TitleScreenShip[] {
@@ -119,7 +119,8 @@ namespace Starforged {
 
 
             if (Keyboard.GetState().IsKeyDown(Keys.Enter)) {
-                game.ChangeScene(new EnemyShipScene(game, 12));
+                game.Map.CurrentLocation = 0;
+                game.ChangeScene(game.Map.Planets[game.Map.CurrentLocation].LevelScene);
             }
 
             // Update ships

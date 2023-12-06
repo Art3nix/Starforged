@@ -43,6 +43,8 @@ namespace Starforged {
         private ExplosionParticleSystem explosionParticles;
 
         private int enemyCount;
+        private bool clearedLevel = false;
+        private String endText = "";
 
         /// <summary>
         /// True if map is shown
@@ -63,10 +65,11 @@ namespace Starforged {
         /// Constructs the game
         /// </summary>
         public EnemyShipScene(Starforged g, int enemyCount) : base(g) {
-            game.gGraphicsMgr.PreferredBackBufferWidth = 1800;
-            game.gGraphicsMgr.PreferredBackBufferHeight = 1000;
+            WindowWidth = 1800;
+            WindowHeight = 1000;
 
             this.enemyCount = enemyCount;
+            map = g.Map;
 
             Width = 2600;
             Height = 2600;
@@ -88,8 +91,8 @@ namespace Starforged {
             hud = new Hud(game);
 
             // Initialize map background
-            mapBackground = new TiledBackground(game.gGraphicsMgr.PreferredBackBufferWidth - 2 * mapPadding,
-                                                game.gGraphicsMgr.PreferredBackBufferHeight - 2 * mapPadding,
+            mapBackground = new TiledBackground(WindowWidth - 2 * mapPadding,
+                                                WindowHeight - 2 * mapPadding,
                                                 mapPadding,
                                                 mapPadding);
 
@@ -102,7 +105,7 @@ namespace Starforged {
             base.Initialize();
 
 
-            // Initialize map
+            // Initialize map to respond to this screen size
             map.Initialize(game, mapPadding, mapPadding);
 
 
@@ -137,8 +140,7 @@ namespace Starforged {
             red = Content.Load<Texture2D>("utils/red");
             green = Content.Load<Texture2D>("utils/green");
 
-            // Load map
-            map = Content.Load<Map>("map");
+            // Load map content
             map.LoadContent(Content);
             mapBackground.LoadContent(Content, "background/space_tile");
 
@@ -157,11 +159,6 @@ namespace Starforged {
         public override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 game.Exit();
-
-            if (enemiesLeft == 0) {
-                // End scene
-                return;
-            }
 
             // Scene has fully transitioned - Start game
             if (prevState == SceneState.TransitionOn && State == SceneState.Active) {
@@ -250,7 +247,9 @@ namespace Starforged {
             for (int j = 0; j < enemyProjectiles.Count; j++) {
                 if (CollisionHelper.Collides(ship.Bounds, enemyProjectiles[j].Bounds)) {
                     // Particle
-                    ship.Health -= enemyProjectiles[j].Damage;
+                    if (!clearedLevel)
+                        ship.Health -= enemyProjectiles[j].Damage;  // When the level is done do not damage the ship
+
                     if (ship.Health <= 0) {
                         explosionParticles.AddExplosion(ship.Bounds.Center);
                         game.ChangeScene(new TitleScene(game));
@@ -398,15 +397,30 @@ namespace Starforged {
             }
 
             // End game
-            if (enemiesLeft == 0 || ship.Health <= 0) {
-                var endScale = 2f;
-                String endText;
-                if (ship.Health > 0)
-                    endText = "Victory";
-                else
+            if (!clearedLevel && (enemiesLeft == 0 || ship.Health <= 0)) {
+                clearedLevel = true;
+                if (ship.Health > 0) {
+                    if (game.Map.CurrentLocation == game.Map.PlanetCount) {
+                        // Final level
+                        endText = "Victory";
+                        game.ChangeScene(new TitleScene(game));
+                    } else {
+                        endText = "Level cleared";
+                        if (game.Map.CurrentLocation == game.Player.Level) {
+                            // Unlock next level
+                            game.Player.Level++;
+                        }
+                    }
+                } else {
                     endText = "Game Over";
+                    game.ChangeScene(new TitleScene(game));
+                }
+            }
+            
+            if (clearedLevel) {
+                var endScale = 2f;
                 spriteBatch.DrawString(textFont, endText, screenCenter, Color.White, 0f, textFont.MeasureString(endText) / 2, endScale, SpriteEffects.None, 0);
-                game.ChangeScene(new TitleScene(game));
+
             }
 
 

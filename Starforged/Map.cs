@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace Starforged {
     public class Map {
@@ -44,7 +45,17 @@ namespace Starforged {
         /// <summary>
         /// The objects on the map
         /// </summary>
-        public Planet[] planets;
+        public Planet[] Planets;
+
+        /// <summary>
+        /// Number of locations
+        /// </summary>
+        public int PlanetCount;
+
+        /// <summary>
+        /// Index of the current planet
+        /// </summary>
+        public int CurrentLocation = 0;
 
         /// <summary>
         /// The game
@@ -52,15 +63,11 @@ namespace Starforged {
         public Starforged game;
 
         private SpriteFont planetFont;
-        private int offsetX;
-        private int offsetY;
 
 
         public void Initialize(Starforged g, int offsetX = 0, int offsetY = 0) {
             game = g;
-            this.offsetX = offsetX;
-            this.offsetY = offsetY;
-
+            
 
             (string, Scene)[] planetInfo = {
                             ("Base", new AsteroidFieldScene(game)),
@@ -71,8 +78,8 @@ namespace Starforged {
                             ("Level 5", new EnemyShipScene(game, 25)),
                             };
 
-            int planetCount = Tiles.Length;
-            planets = new Planet[planetCount];
+            PlanetCount = Tiles.Length;
+            Planets = new Planet[PlanetCount];
 
             for (int y = 0; y < MapHeight; y++) {
                 for (int x = 0; x < MapWidth; x++) {
@@ -82,7 +89,7 @@ namespace Starforged {
                                                    offsetY + y * TileHeight,
                                                    TileWidth,
                                                    TileHeight);
-                    planets[index] = new Planet(planetInfo[index].Item1, planetInfo[index].Item2, area);
+                    Planets[index] = new Planet(planetInfo[index].Item1, planetInfo[index].Item2, area);
                 }
             }
 
@@ -96,11 +103,12 @@ namespace Starforged {
 
         public void Update() {
             MouseState mouse = Mouse.GetState();
-            for (int i = 0; i < planets.Length; i++) {
-                if (planets[i].Area.Contains(mouse.Position)) {
+            for (int i = 0; i < PlanetCount && i <= game.Player.Level; i++) {
+                if (Planets[i].Area.Contains(mouse.Position)) {
                     if (mouse.LeftButton == ButtonState.Pressed) {
                         // enter the map
-                        game.ChangeScene(planets[i].LevelScene);
+                        game.ChangeScene(Planets[i].LevelScene);
+                        CurrentLocation = i;
                         break;
                     }
                 }
@@ -109,21 +117,16 @@ namespace Starforged {
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch) {
 
-            for (int y = 0; y < MapHeight; y++) {
-                for (int x = 0; x < MapWidth; x++) {
-                    int index = MapData[y * MapWidth + x];
-                    if (index == -1) continue;
-                    spriteBatch.Draw(TilesetTexture, new Vector2(offsetX + x * TileWidth, offsetY + y * TileHeight), Tiles[index], Color.White);
-                }
-            }
-
             MouseState mouse = Mouse.GetState();
-            for (int i = 0; i < planets.Length; i++) {
-                if (planets[i].Area.Contains(mouse.Position)) {
+            for (int i = 0; i < PlanetCount && i <= game.Player.Level; i++) {
+                // Draw the planet
+                spriteBatch.Draw(TilesetTexture, new Vector2(Planets[i].Area.X, Planets[i].Area.Y), Tiles[i], Color.White);
+
+                if (Planets[i].Area.Contains(mouse.Position)) {
                     //on hover show name
                     var planetScale = 0.8f;
-                    var planetText = planets[i].Name;
-                    var planetPos = new Vector2(planets[i].Area.Center.X, planets[i].Area.Bottom + 10);
+                    var planetText = Planets[i].Name;
+                    var planetPos = new Vector2(Planets[i].Area.Center.X, Planets[i].Area.Bottom + 10);
                     spriteBatch.DrawString(planetFont, planetText, planetPos, Color.White, 0f, planetFont.MeasureString(planetText) / 2, planetScale, SpriteEffects.None, 0);
 
                 }

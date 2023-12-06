@@ -30,6 +30,16 @@ namespace Starforged {
         public int Height;
 
         /// <summary>
+        /// Width of the window
+        /// </summary>
+        public int WindowWidth;
+
+        /// <summary>
+        /// Height of the window
+        /// </summary>
+        public int WindowHeight;
+
+        /// <summary>
         /// State of this scene
         /// </summary>
         public SceneState State = SceneState.Inactive;

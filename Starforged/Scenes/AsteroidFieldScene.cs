@@ -52,8 +52,10 @@ namespace Starforged {
         /// Constructs the game
         /// </summary>
         public AsteroidFieldScene(Starforged g) : base(g) {
-            game.gGraphicsMgr.PreferredBackBufferWidth = 1800;
-            game.gGraphicsMgr.PreferredBackBufferHeight = 1000;
+            WindowWidth = 1800;
+            WindowHeight = 1000;
+
+            map = g.Map;
 
             Width = 2600;
             Height = 2600;
@@ -82,8 +84,8 @@ namespace Starforged {
             hud = new Hud(game);
 
             // Initialize map background
-            mapBackground = new TiledBackground(game.gGraphicsMgr.PreferredBackBufferWidth - 2 * mapPadding,
-                                                game.gGraphicsMgr.PreferredBackBufferHeight - 2 * mapPadding,
+            mapBackground = new TiledBackground(WindowWidth - 2 * mapPadding,
+                                                WindowHeight - 2 * mapPadding,
                                                 mapPadding,
                                                 mapPadding);
 
@@ -93,7 +95,7 @@ namespace Starforged {
 
             base.Initialize();
 
-            // Initialize map
+            // Initialize map to respond to this screen size
             map.Initialize(game, mapPadding, mapPadding);
 
 
@@ -118,8 +120,7 @@ namespace Starforged {
             viewportRectangle = Content.Load<Texture2D>("rectangle");
             playerIcon = Content.Load<Texture2D>("player");
 
-            // Load map
-            map = Content.Load<Map>("map");
+            // Load map content
             map.LoadContent(Content);
             mapBackground.LoadContent(Content, "background/space_tile");
 

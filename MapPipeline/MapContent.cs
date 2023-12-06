@@ -33,7 +33,17 @@ namespace MapPipeline {
         /// <summary>
         /// The objects on the map
         /// </summary>
-        public Planet[] planets;
+        public Planet[] Planets;
+
+        /// <summary>
+        /// Number of locations
+        /// </summary>
+        public int PlanetCount;
+
+        /// <summary>
+        /// Index of the current planet
+        /// </summary>
+        public int CurrentLocation;
 
         /// <summary>
         /// The game

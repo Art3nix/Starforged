@@ -3,6 +3,8 @@
 namespace Starforged {
     public class Planet {
 
+        // TODO is selected
+
         public Rectangle Area;
 
         public Scene LevelScene;

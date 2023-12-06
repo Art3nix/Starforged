@@ -17,6 +17,11 @@ namespace Starforged
         public Scene CurrScene;
 
         /// <summary>
+        /// The galaxy map
+        /// </summary>
+        public Map Map;
+
+        /// <summary>
         /// Graphics device
         /// </summary>
         public static GraphicsDevice gDevice;
@@ -55,12 +60,17 @@ namespace Starforged
         protected override void Initialize() {
 
             // Load player
-            if (File.Exists(SaveGamePath))
+            if (File.Exists(SaveGamePath)) {
                 Load();
-            else
-                Player = new Player();
+            } else {
+                Player = new Player(100, 150, 200, 250, 300);
+                Save();
+            }
 
             base.Initialize();
+
+            // Initialize map
+            Map.Initialize(this);
 
             ChangeScene(new TitleScene(this));
 
@@ -71,6 +81,9 @@ namespace Starforged
         /// </summary>
         protected override void LoadContent() {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            // Load map
+            Map = Content.Load<Map>("map");
 
         }
 
@@ -98,7 +111,10 @@ namespace Starforged
                     CurrScene = nextScene;
                     nextScene = null;
 
+
                     // Update screen size if needed
+                    gGraphicsMgr.PreferredBackBufferWidth = CurrScene.WindowWidth;
+                    gGraphicsMgr.PreferredBackBufferHeight = CurrScene.WindowHeight;
                     gGraphicsMgr.ApplyChanges();
                     CurrScene.Initialize();
                     CurrScene.State = SceneState.TransitionOn;
