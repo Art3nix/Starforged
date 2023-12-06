@@ -71,7 +71,8 @@ namespace Starforged {
 
             Vector2 pos = new Vector2(bgRectangle.X - bgWidth / 2 + padding, padding);
             var fuel = game.Player.Fuel > 20f ? game.Player.Fuel.ToString("0") : game.Player.Fuel.ToString("0.0");
-            printResource(spriteBatch, fuelIcon, ref pos, fuel);
+            var fuelColor = game.Player.Fuel > 10f ? Color.White : Color.Red;
+            printResource(spriteBatch, fuelIcon, ref pos, fuel, fuelColor);
             printResource(spriteBatch, jumpFuelIcon, ref pos, game.Player.JumpFuel.ToString());
             printResource(spriteBatch, componentsIcon, ref pos, game.Player.Components.ToString());
             printResource(spriteBatch, creditsIcon, ref pos, game.Player.Credits.ToString());
@@ -81,10 +82,16 @@ namespace Starforged {
 
         }
 
+
         private void printResource(SpriteBatch spriteBatch, Texture2D icon, ref Vector2 pos, string amount) {
+            printResource(spriteBatch, icon, ref pos, amount, Color.White);
+        }
+
+
+        private void printResource(SpriteBatch spriteBatch, Texture2D icon, ref Vector2 pos, string amount, Color color) {
             spriteBatch.Draw(icon, new Rectangle((int)pos.X, (int)pos.Y, iconSize, iconSize), Color.White);
             pos.X += textOffset + iconSize;
-            spriteBatch.DrawString(textFont, amount, pos, Color.White);
+            spriteBatch.DrawString(textFont, amount, pos, color);
             pos.X += iconOffset + maxTextLen;
 
         }

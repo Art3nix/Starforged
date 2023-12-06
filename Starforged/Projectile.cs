@@ -13,7 +13,7 @@ namespace Starforged {
         private Texture2D texture;
 
         // Parameters of the projectile
-        private int speed = 250;
+        private int speed = 400;
         private int size;
 
         /// <summary>

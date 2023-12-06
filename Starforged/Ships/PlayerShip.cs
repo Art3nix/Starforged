@@ -23,8 +23,8 @@ namespace Starforged {
         // Ship constants
         private float LIN_ACCELERATION = 70;
         private float ANG_ACCELERATION = 2.5f;
-        private float ANG_FCONSUMPTION = 0.15f;
-        private float LIN_FCONSUMPTION = 0.4f;
+        private float ANG_FCONSUMPTION = 0.1f;
+        private float LIN_FCONSUMPTION = 0.3f;
 
         private SoundEffectInstance engineSoundInstance;
 
@@ -159,9 +159,10 @@ namespace Starforged {
                 // Slow down angular movement if dampers are on
                 if (angVelocity > 0) {
                     angAcc -= ANG_ACCELERATION;
-                    fuelConsumed += ANG_FCONSUMPTION * time;
                 } else if (angVelocity < 0) {
                     angAcc += ANG_ACCELERATION;
+                }
+                if (angVelocity > 0.1f) {
                     fuelConsumed += ANG_FCONSUMPTION * time;
                 }
 
@@ -176,14 +177,27 @@ namespace Starforged {
                 acc -= direction * LIN_ACCELERATION;
                 fuelConsumed += LIN_FCONSUMPTION * time;
                 pitch = -.75f;
-            } else if (InertiaDampers && ShipVelocity != Vector2.Zero) {
+            } 
+
+            if (InertiaDampers && ShipVelocity != Vector2.Zero) {
                 // Slow down ship if dampers are on
                 if (Vector2.Distance(ShipVelocity, Vector2.Zero) > Math.Sqrt(2)) {
                     // do not consume fuel if ship almost not moving
                     fuelConsumed += LIN_FCONSUMPTION * time;
                     
                 }
-                acc += (-Vector2.Normalize(ShipVelocity)) * LIN_ACCELERATION;
+                
+                
+                if (kbState.IsKeyDown(Keys.Down) || kbState.IsKeyDown(Keys.Up)) {
+                    // if user input move the ship sideways in opposite direction that it is going
+                    Vector2 norm = new Vector2(direction.Y, -direction.X);  //normal vector to direction
+                    if (Vector2.Distance(norm, ShipVelocity) < Vector2.Distance(-norm, ShipVelocity))
+                        norm = -norm;
+                    acc += norm * LIN_ACCELERATION;
+                } else {
+                    // no user input means slow ship in opposite direction
+                    acc += (-Vector2.Normalize(ShipVelocity)) * LIN_ACCELERATION;
+                }
             }
 
             if (game.Player.Fuel > 0f) {
