@@ -25,6 +25,9 @@ namespace Starforged {
         private EnemyShip[] enemies;
         private int enemiesLeft;
 
+        // Items
+        private List<Item> items = new List<Item>();
+
         // Ship projectiles
         private List<Projectile> projectiles = new List<Projectile>();
         private List<Projectile> enemyProjectiles = new List<Projectile>();
@@ -228,6 +231,10 @@ namespace Starforged {
                         enemies[i].Health -= projectiles[j].Damage;
                         if (enemies[i].Health <= 0) {
                             explosionParticles.AddExplosion(enemies[i].Bounds.Center);
+                            items.Add(Item.Create(Content, enemies[i].Bounds.Center,
+                                            new float[] { 0.15f, 0.1f, 0.15f, 0.2f, 0.25f },
+                                            new int[] { 20, 10, 20, 20, 25 }));
+
                             enemies[i].Despawn();
                             enemiesLeft--;
                         }
@@ -256,6 +263,14 @@ namespace Starforged {
                     }
 
                     enemyProjectiles.RemoveAt(j);
+                }
+            }
+
+            // Collision between the player and an item
+            for (int i = 0; i < items.Count; i++) {
+                if (CollisionHelper.Collides(items[i].Bounds, ship.Bounds)) {
+                    items[i].Add(game.Player);
+                    items.RemoveAt(i);
                 }
             }
 
@@ -328,6 +343,9 @@ namespace Starforged {
 
             // Add transformation to particles
             explosionParticles.TransformMatrix = transform;
+
+            // Draw items
+            foreach (var i in items) i.Draw(gameTime, spriteBatch);
 
             // Draw enemies
             foreach (var enemy in enemies) {

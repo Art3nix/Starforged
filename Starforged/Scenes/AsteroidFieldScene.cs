@@ -133,9 +133,6 @@ namespace Starforged {
             // Load asteroids
             foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
 
-            // Load items
-            foreach (var item in items) item.LoadContent(Content);
-
             // Load sfx
             collisionSound = Content.Load<SoundEffect>("music/sfx/collision");
 
@@ -273,6 +270,9 @@ namespace Starforged {
             // Add transformation to particles
             explosionParticles.TransformMatrix = transform;
 
+            // Draw items
+            foreach (var i in items) i.Draw(gameTime, spriteBatch);
+
             // Draw asteroids
             foreach (var asteroid in asteroids) {
                 asteroid.Draw(gameTime, spriteBatch);
@@ -283,9 +283,6 @@ namespace Starforged {
 
             // Update projectile texture
             foreach (var p in projectiles) p.Draw(gameTime, spriteBatch);
-
-            // Draw items
-            foreach (var i in items) i.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();
 
