@@ -25,6 +25,9 @@ namespace Starforged {
         // Asteroids
         private Asteroid[] asteroids;
 
+        // Items
+        private List<Item> items = new List<Item>();
+
         // Ship projectiles
         private List<Projectile> projectiles = new List<Projectile>();
 
@@ -130,6 +133,9 @@ namespace Starforged {
             // Load asteroids
             foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
 
+            // Load items
+            foreach (var item in items) item.LoadContent(Content);
+
             // Load sfx
             collisionSound = Content.Load<SoundEffect>("music/sfx/collision");
 
@@ -188,10 +194,21 @@ namespace Starforged {
                     if (CollisionHelper.Collides(asteroids[i].Bounds, projectiles[j].Bounds)) {
                         // Particle
                         explosionParticles.AddExplosion(asteroids[i].Bounds.Center);
+                        items.Add(Item.Create(Content, asteroids[i].Bounds.Center,
+                                        new float[] { 0.1f, 0.05f, 0.05f, 0.2f, 0.25f },
+                                        new int[] { 20, 10, 10, 20, 5 }));
 
                         asteroids[i].Respawn();
                         projectiles.RemoveAt(j);
                     }
+                }
+            }
+
+            // Collision between the player and an item
+            for (int i = 0; i < items.Count; i++) {
+                if (CollisionHelper.Collides(items[i].Bounds, ship.Bounds)) {
+                    items[i].Add(game.Player);
+                    items.RemoveAt(i);
                 }
             }
 
@@ -266,6 +283,9 @@ namespace Starforged {
 
             // Update projectile texture
             foreach (var p in projectiles) p.Draw(gameTime, spriteBatch);
+
+            // Draw items
+            foreach (var i in items) i.Draw(gameTime, spriteBatch);
 
             spriteBatch.End();
 
