@@ -44,16 +44,17 @@ namespace Starforged {
             Position = new Vector2(Starforged.gDevice.Viewport.Width / 2, Starforged.gDevice.Viewport.Height / 2);
 
             // Init values
-            MAXSPEED = 150;
-            MAXANGSPEED = 5;
+            MaxSpeed = 150;
+            MaxAngSpeed = 5;
             SIZE = 48;
             Mass = SIZE; // in tons
             Health = 40;
             MaxHealth = 40;
             Damage = 15;
+            ProjectileSpeed = 300;
 
 
-            bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
+            Bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
 
             Target = null;
         }
@@ -69,24 +70,25 @@ namespace Starforged {
             this.game = game;
 
             // Init values
-            MAXSPEED = 150;
-            MAXANGSPEED = 10;
+            MaxSpeed = 150;
+            MaxAngSpeed = 10;
             SIZE = 48;
             Mass = SIZE; // in tons
             Health = 40;
             MaxHealth = 40;
             Damage = 15;
+            ProjectileSpeed = 300;
 
             // Choose random position
             Position = getRandomPosition();
 
 
-            bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
+            Bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
 
 
             // Set angle to target
-            Angle = (float)Math.Atan2(bounds.Center.Y - target.Bounds.Center.Y,
-                                             bounds.Center.X - target.Bounds.Center.X) - MathHelper.PiOver2;
+            Angle = (float)Math.Atan2(Bounds.Center.Y - target.Bounds.Center.Y,
+                                             Bounds.Center.X - target.Bounds.Center.X) - MathHelper.PiOver2;
             direction = new Vector2((float)Math.Sin(Angle), (float)-Math.Cos(Angle));
 
         }
@@ -104,8 +106,8 @@ namespace Starforged {
 
 
             // Update the bounds position
-            bounds.Center.X = Position.X;
-            bounds.Center.Y = Position.Y;
+            Bounds.Center.X = Position.X;
+            Bounds.Center.Y = Position.Y;
         }
 
         /// <summary>
@@ -140,8 +142,8 @@ namespace Starforged {
             float angAcc = 0;
 
 
-            float targetAngle = (float)Math.Atan2(bounds.Center.Y - Target.Bounds.Center.Y,
-                                             bounds.Center.X - Target.Bounds.Center.X) - MathHelper.PiOver2;
+            float targetAngle = (float)Math.Atan2(Bounds.Center.Y - Target.Bounds.Center.Y,
+                                             Bounds.Center.X - Target.Bounds.Center.X) - MathHelper.PiOver2;
 
 /*          TODO figure out the math
             TargetAngle = targetAngle;
@@ -155,8 +157,8 @@ namespace Starforged {
             }*/
 
 
-            double distance = Math.Pow(Target.Bounds.Center.X - bounds.Center.X, 2) +
-                              Math.Pow(Target.Bounds.Center.Y - bounds.Center.Y, 2);
+            double distance = Math.Pow(Target.Bounds.Center.X - Bounds.Center.X, 2) +
+                              Math.Pow(Target.Bounds.Center.Y - Bounds.Center.Y, 2);
             var range = 90000; // 300px^
             if (distance > range) {
                 acc += direction * LIN_ACCELERATION;
@@ -172,9 +174,9 @@ namespace Starforged {
             ShipVelocity += acc * time;
 
             // Clamp values
-            ShipVelocity.X = Math.Clamp(ShipVelocity.X, -MAXSPEED, +MAXSPEED);
-            ShipVelocity.Y = Math.Clamp(ShipVelocity.Y, -MAXSPEED, +MAXSPEED);
-            angVelocity = Math.Clamp(angVelocity, -MAXANGSPEED, +MAXANGSPEED);
+            ShipVelocity.X = Math.Clamp(ShipVelocity.X, -MaxSpeed, +MaxSpeed);
+            ShipVelocity.Y = Math.Clamp(ShipVelocity.Y, -MaxSpeed, +MaxSpeed);
+            angVelocity = Math.Clamp(angVelocity, -MaxAngSpeed, +MaxAngSpeed);
 
             if (Math.Abs(angVelocity) < 0.01f) angVelocity = 0f;
 
@@ -226,15 +228,15 @@ namespace Starforged {
 
 
             // Set angle to target
-            Angle = (float)-Math.Atan2(Target.Bounds.Center.Y - bounds.Center.Y,
-                                             Target.Bounds.Center.X - bounds.Center.X);
+            Angle = (float)-Math.Atan2(Target.Bounds.Center.Y - Bounds.Center.Y,
+                                             Target.Bounds.Center.X - Bounds.Center.X);
             direction = new Vector2((float)Math.Sin(Angle), (float)-Math.Cos(Angle));
 
         }
 
         public bool TargetInRange() {
-            return (Math.Pow(Target.Bounds.Center.X - bounds.Center.X, 2) +
-                   Math.Pow(Target.Bounds.Center.Y - bounds.Center.Y, 2)) < 160000; //400px^2
+            return (Math.Pow(Target.Bounds.Center.X - Bounds.Center.X, 2) +
+                   Math.Pow(Target.Bounds.Center.Y - Bounds.Center.Y, 2)) < 160000; //400px^2
         }
 
         public void Despawn() {

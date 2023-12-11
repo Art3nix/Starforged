@@ -53,7 +53,7 @@ namespace Starforged {
         /// True if map is shown
         /// </summary>
         bool showMap = false;
-        private Map map;
+        private ImportedMap map;
         private Background mapBackground;
         private int mapPadding = 60;
 
@@ -175,7 +175,7 @@ namespace Starforged {
 
             if (showMap) {
                 // don't update the scene if the map is displayed
-                map.Update();
+                map.Update(game);
                 priorKeyboardState = Keyboard.GetState();
                 return;
             }
@@ -209,7 +209,7 @@ namespace Starforged {
                                                   (float)(enemies[i].Position.Y + projOffset * -Math.Cos(enemies[i].Angle)));
                     Vector2 projDir = new Vector2((float)Math.Sin(enemies[i].Angle),
                                                   (float)-Math.Cos(enemies[i].Angle));
-                    Projectile proj = new Projectile(Content, projPos, projDir, enemies[i].Damage);
+                    Projectile proj = new Projectile(Content, projPos, projDir, enemies[i].Damage, enemies[i].ProjectileSpeed);
                     enemyProjectiles.Add(proj);
                     enemies[i].ShootDelay = 0;
                 }
@@ -284,7 +284,7 @@ namespace Starforged {
                                               (float)(ship.Position.Y + projOffset * -Math.Cos(ship.Angle)));
                 Vector2 projDir = new Vector2((float)Math.Sin(ship.Angle),
                                               (float)-Math.Cos(ship.Angle));
-                Projectile proj = new Projectile(Content, projPos, projDir, ship.Damage);
+                Projectile proj = new Projectile(Content, projPos, projDir, ship.Damage, ship.ProjectileSpeed);
                 projectiles.Add(proj);
                 game.Player.Ammo--;
             }
@@ -556,7 +556,7 @@ namespace Starforged {
             }
 
             // Draw map objects
-            map.Draw(gameTime, spriteBatch);
+            map.Draw(gameTime, spriteBatch, game);
 
         }
     }

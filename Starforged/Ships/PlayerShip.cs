@@ -4,12 +4,16 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Collections.Generic;
+using System.Runtime.Serialization;
 
 namespace Starforged {
+
 
     /// <summary>
     /// A class representing a ship
     /// </summary>
+    [DataContract]
     public class PlayerShip : Ship {
 
         // Animation values
@@ -21,10 +25,20 @@ namespace Starforged {
         private float angVelocity;
 
         // Ship constants
-        private float LIN_ACCELERATION = 70;
-        private float ANG_ACCELERATION = 2.5f;
         private float ANG_FCONSUMPTION = 0.1f;
         private float LIN_FCONSUMPTION = 0.3f;
+        private int HEALTH_INC = 20;
+        private int SPEED_INC = 40;
+        private int LIN_ACC_INC = 25;
+        private int ANG_SPEED_INC = 2;
+        private float ANG_ACC_INC = 0.2f;
+        private int DAMAGE_INC = 10;
+        private int PROJ_SPEED_INC = 100;
+
+        // Ship parameters
+        public float LinAcceleration;
+        public float AngAcceleration;
+
 
         private SoundEffectInstance engineSoundInstance;
 
@@ -47,15 +61,18 @@ namespace Starforged {
             Position = new Vector2(Starforged.gDevice.Viewport.Width / 2, Starforged.gDevice.Viewport.Height / 2);
 
             // Init values
-            MAXSPEED = 150;
-            MAXANGSPEED = 50;
             SIZE = 48;
             Mass = SIZE; // in tons
-            Health = 100;
-            MaxHealth = 100;
-            Damage = 20;
+            MaxHealth = 100 + HEALTH_INC * game.Player.ShipUpgradeLevels[UpgradeType.Health];
+            Health = MaxHealth;
+            MaxSpeed = 150 + SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Speed];
+            LinAcceleration = 70 + LIN_ACC_INC * game.Player.ShipUpgradeLevels[UpgradeType.Speed];
+            MaxAngSpeed = 50 + ANG_SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Agility];
+            AngAcceleration = 2.5f + ANG_ACC_INC * game.Player.ShipUpgradeLevels[UpgradeType.Agility];
+            Damage = 20 + DAMAGE_INC * game.Player.ShipUpgradeLevels[UpgradeType.Damage];
+            ProjectileSpeed = 400 + PROJ_SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.ProjSpeed];
 
-            bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
+            Bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
 
             engineSoundInstance = engineSound.CreateInstance();
             engineSoundInstance.IsLooped = true;
@@ -82,15 +99,18 @@ namespace Starforged {
             Position = new Vector2(Starforged.gDevice.Viewport.Width / 2, Starforged.gDevice.Viewport.Height / 2);
 
             // Init values
-            MAXSPEED = 150;
-            MAXANGSPEED = 10;
             SIZE = 48;
             Mass = SIZE; // in tons
-            Health = 100;
-            MaxHealth = 100;
-            Damage = 20;
+            MaxHealth = 100 + HEALTH_INC * game.Player.ShipUpgradeLevels[UpgradeType.Health];
+            Health = MaxHealth;
+            MaxSpeed = 150 + SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Speed];
+            LinAcceleration = 70 + SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Speed];
+            MaxAngSpeed = 50 + ANG_SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Agility];
+            AngAcceleration = 2.5f + ANG_SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Agility];
+            Damage = 20 + DAMAGE_INC * game.Player.ShipUpgradeLevels[UpgradeType.Damage];
+            ProjectileSpeed = 400 + PROJ_SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.ProjSpeed];
 
-            bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
+            Bounds = new BoundingCircle(Position + new Vector2(SIZE / 2, SIZE / 2), SIZE / 2);
 
             engineSoundInstance = engineSound.CreateInstance();
             engineSoundInstance.IsLooped = true;
@@ -107,11 +127,20 @@ namespace Starforged {
             //Move in the correct direction
             UpdateMovement(gameTime);
 
+            // Update variables based on upgrades
+            MaxHealth = 100 + HEALTH_INC * game.Player.ShipUpgradeLevels[UpgradeType.Health];
+            MaxSpeed = 150 + SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Speed];
+            LinAcceleration = 70 + SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Speed];
+            MaxAngSpeed = 50 + ANG_SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Agility];
+            AngAcceleration = 2.5f + ANG_SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.Agility];
+            Damage = 20 + DAMAGE_INC * game.Player.ShipUpgradeLevels[UpgradeType.Damage];
+            ProjectileSpeed = 400 + PROJ_SPEED_INC * game.Player.ShipUpgradeLevels[UpgradeType.ProjSpeed];
+
 
 
             // Update the bounds position
-            bounds.Center.X = Position.X;
-            bounds.Center.Y = Position.Y;
+            Bounds.Center.X = Position.X;
+            Bounds.Center.Y = Position.Y;
         }
 
         /// <summary>
@@ -150,17 +179,17 @@ namespace Starforged {
             float pitch = 0.0f;
 
             if (kbState.IsKeyDown(Keys.Left)) {
-                angAcc -= ANG_ACCELERATION;
+                angAcc -= AngAcceleration;
                 fuelConsumed += ANG_FCONSUMPTION * time;
             } else if (kbState.IsKeyDown(Keys.Right)) {
-                angAcc += ANG_ACCELERATION;
+                angAcc += AngAcceleration;
                 fuelConsumed += ANG_FCONSUMPTION * time;
             } else if (InertiaDampers) {
                 // Slow down angular movement if dampers are on
                 if (angVelocity > 0) {
-                    angAcc -= ANG_ACCELERATION;
+                    angAcc -= AngAcceleration;
                 } else if (angVelocity < 0) {
-                    angAcc += ANG_ACCELERATION;
+                    angAcc += AngAcceleration;
                 }
                 if (angVelocity > 0.1f) {
                     fuelConsumed += ANG_FCONSUMPTION * time;
@@ -169,12 +198,12 @@ namespace Starforged {
             }
 
             if (kbState.IsKeyDown(Keys.Up)) {
-                acc += direction * LIN_ACCELERATION;
+                acc += direction * LinAcceleration;
                 fuelConsumed += LIN_FCONSUMPTION * time;
                 pitch = .5f;
             }
             else if (kbState.IsKeyDown(Keys.Down)) {
-                acc -= direction * LIN_ACCELERATION;
+                acc -= direction * LinAcceleration;
                 fuelConsumed += LIN_FCONSUMPTION * time;
                 pitch = -.75f;
             } 
@@ -193,10 +222,10 @@ namespace Starforged {
                     Vector2 norm = new Vector2(direction.Y, -direction.X);  //normal vector to direction
                     if (Vector2.Distance(norm, ShipVelocity) < Vector2.Distance(-norm, ShipVelocity))
                         norm = -norm;
-                    acc += norm * LIN_ACCELERATION;
+                    acc += norm * LinAcceleration;
                 } else {
                     // no user input means slow ship in opposite direction
-                    acc += (-Vector2.Normalize(ShipVelocity)) * LIN_ACCELERATION;
+                    acc += (-Vector2.Normalize(ShipVelocity)) * LinAcceleration;
                 }
             }
 
@@ -210,9 +239,9 @@ namespace Starforged {
             }
 
             // Clamp values
-            ShipVelocity.X = Math.Clamp(ShipVelocity.X, -MAXSPEED, +MAXSPEED);
-            ShipVelocity.Y = Math.Clamp(ShipVelocity.Y, -MAXSPEED, +MAXSPEED);
-            angVelocity = Math.Clamp(angVelocity, -MAXANGSPEED, +MAXANGSPEED);
+            ShipVelocity.X = Math.Clamp(ShipVelocity.X, -MaxSpeed, +MaxSpeed);
+            ShipVelocity.Y = Math.Clamp(ShipVelocity.Y, -MaxSpeed, +MaxSpeed);
+            angVelocity = Math.Clamp(angVelocity, -MaxAngSpeed, +MaxAngSpeed);
 
 
             Angle += angVelocity * time;

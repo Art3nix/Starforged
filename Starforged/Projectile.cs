@@ -13,7 +13,6 @@ namespace Starforged {
         private Texture2D texture;
 
         // Parameters of the projectile
-        private int speed = 400;
         private int size;
 
         /// <summary>
@@ -25,6 +24,11 @@ namespace Starforged {
         /// Damage of the projectile
         /// </summary>
         public int Damage;
+
+        /// <summary>
+        /// Speed of the projectile
+        /// </summary>
+        public int Speed;
 
         private Color[] colors = new Color[] {
             Color.Fuchsia,
@@ -42,13 +46,14 @@ namespace Starforged {
         /// <summary>
         /// Constructs a new projectile
         /// </summary>
-        public Projectile(ContentManager content, Vector2 pos, Vector2 dir, int damage) {
+        public Projectile(ContentManager content, Vector2 pos, Vector2 dir, int damage, int speed) {
 
             LoadContent(content);
 
             Position = pos;
             Velocity = dir;
             Damage = damage;
+            Speed = speed;
             Color = colors[colorIndex];
         }
 
@@ -59,8 +64,8 @@ namespace Starforged {
         public void LoadContent(ContentManager content) {
             texture = content.Load<Texture2D>("projectile");
             size = texture.Width;
-            Mass = size * speed;
-            bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
+            Mass = size * Speed;
+            Bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
         }
 
         /// <summary>
@@ -70,13 +75,13 @@ namespace Starforged {
         public void Update(GameTime gameTime) {
 
             //Move in the correct direction
-            Position += Velocity * speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += Velocity * Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 
 
             // Update the bounds position
-            bounds.Center.X = Position.X;
-            bounds.Center.Y = Position.Y;
+            Bounds.Center.X = Position.X;
+            Bounds.Center.Y = Position.Y;
 
 
         }

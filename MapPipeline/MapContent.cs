@@ -2,11 +2,10 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
 using Microsoft.Xna.Framework.Graphics;
-using Starforged;
 
 namespace MapPipeline {
 
-    [ContentSerializerRuntimeType("Starforged.Map, Starforged")]
+    [ContentSerializerRuntimeType("Starforged.ImportedMap, Starforged")]
     public class MapContent {
 
 
@@ -31,11 +30,6 @@ namespace MapPipeline {
         public int[] MapData;
 
         /// <summary>
-        /// The objects on the map
-        /// </summary>
-        public Planet[] Planets;
-
-        /// <summary>
         /// Number of locations
         /// </summary>
         public int PlanetCount;
@@ -44,11 +38,6 @@ namespace MapPipeline {
         /// Index of the current planet
         /// </summary>
         public int CurrentLocation;
-
-        /// <summary>
-        /// The game
-        /// </summary>
-        public Starforged.Starforged game;
 
         /// <summary>
         /// The name of the file containing map data

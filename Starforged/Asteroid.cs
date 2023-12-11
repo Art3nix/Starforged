@@ -65,7 +65,7 @@ namespace Starforged {
             texture = content.Load<Texture2D>(textureName);
             size = texture.Width;
             Mass = size; // in tons
-            bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
+            Bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
         }
 
         /// <summary>
@@ -100,8 +100,8 @@ namespace Starforged {
             }
 
             // Update the bounds position
-            bounds.Center.X = Position.X;
-            bounds.Center.Y = Position.Y;
+            Bounds.Center.X = Position.X;
+            Bounds.Center.Y = Position.Y;
 
 
         }

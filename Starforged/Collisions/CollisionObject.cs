@@ -3,13 +3,10 @@
 namespace Starforged {
     public class CollisionObject {
 
-        // Collision box
-        protected BoundingCircle bounds;
-
         /// <summary>
-        /// Get bounds of the asteroid
+        /// Collision area of the object
         /// </summary>
-        public BoundingCircle Bounds => bounds;
+        public BoundingCircle Bounds;
 
         /// <summary>
         /// Get mass of the asteroid

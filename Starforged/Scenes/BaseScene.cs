@@ -4,10 +4,9 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
-using Starforged.Particles;
 
 namespace Starforged {
-    public class AsteroidFieldScene : Scene {
+    public class BaseScene : Scene {
 
         // Background
         private Background background;
@@ -19,11 +18,8 @@ namespace Starforged {
         // Ships
         private PlayerShip ship;
 
-        // Asteroids
-        private Asteroid[] asteroids;
-
-        // Items
-        private List<Item> items = new List<Item>();
+        // Space station
+        private SpaceStation station;
 
         // Ship projectiles
         private List<Projectile> projectiles = new List<Projectile>();
@@ -37,8 +33,6 @@ namespace Starforged {
         private Texture2D viewportRectangle;
         private Texture2D playerIcon;
 
-        private ExplosionParticleSystem explosionParticles;
-
         /// <summary>
         /// True if map is shown
         /// </summary>
@@ -49,16 +43,23 @@ namespace Starforged {
 
 
         /// <summary>
+        /// True if shop is shown
+        /// </summary>
+        public bool showShop = false;
+        private Shop shop;
+
+
+        /// <summary>
         /// Constructs the game
         /// </summary>
-        public AsteroidFieldScene(Starforged g) : base(g) {
+        public BaseScene(Starforged g) : base(g) {
             WindowWidth = 1800;
             WindowHeight = 1000;
 
             map = g.Map;
 
-            Width = 2600;
-            Height = 2600;
+            Width = Math.Clamp(WindowWidth, 1800, WindowWidth);
+            Height = Math.Clamp(WindowWidth, 1000, WindowWidth);
         }
 
         /// <summary>
@@ -69,19 +70,11 @@ namespace Starforged {
             // Initialize background
             background = new TiledBackground(Width, Height);
 
-            // Initialize asteroids
-            Random r = new Random();
-            asteroids = new Asteroid[40];
-            for (var i = 0; i < asteroids.Length; i++) {
-                asteroids[i] = new Asteroid(game, r.Next(4), r.Next(3));
-            }
-
-            // Initialize particles
-            explosionParticles = new ExplosionParticleSystem(game, 1500);
-            game.Components.Add(explosionParticles);
-
             // Initialize hud
             hud = new Hud(game);
+
+            // Initialize shop overlay
+            shop = new Shop(game);
 
             // Initialize map background
             mapBackground = new TiledBackground(WindowWidth - 2 * mapPadding,
@@ -101,6 +94,9 @@ namespace Starforged {
 
             // Initialize ships
             ship = new PlayerShip(game, Content, "ships/ship1");
+
+            // Initialize space station
+            station = new SpaceStation(Content, new Vector2(Width/2, Height/2));
 
         }
 
@@ -124,11 +120,11 @@ namespace Starforged {
             map.LoadContent(Content);
             mapBackground.LoadContent(Content, "background/space_tile");
 
+            // Load shop overlay content
+            shop.LoadContent(Content);
+
             // Load font
             textFont = Content.Load<SpriteFont>("millennia");
-
-            // Load asteroids
-            foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
 
             // Load sfx
             collisionSound = Content.Load<SoundEffect>("music/sfx/collision");
@@ -142,6 +138,18 @@ namespace Starforged {
         public override void Update(GameTime gameTime) {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 game.Exit();
+
+            // Show/hide the shop
+            if (CollisionHelper.Collides(ship.Bounds, station.Vicinity) &&
+                Keyboard.GetState().IsKeyDown(Keys.E) && priorKeyboardState.IsKeyUp(Keys.E)) {
+                showShop = !showShop;
+            }
+
+            if (showShop) {
+                shop.Update(gameTime);
+                priorKeyboardState = Keyboard.GetState();
+                return;
+            }
 
             // Show/hide the map
             if (Keyboard.GetState().IsKeyDown(Keys.M) && priorKeyboardState.IsKeyUp(Keys.M)) {
@@ -160,51 +168,44 @@ namespace Starforged {
                 ship.InertiaDampers = !ship.InertiaDampers;
             }
 
+            // Check if player in vicinity of station
+            if (CollisionHelper.Collides(ship.Bounds, station.Vicinity) &&
+                Keyboard.GetState().IsKeyDown(Keys.Enter) && priorKeyboardState.IsKeyUp(Keys.Enter)) {
+                // Open shop
+
+            }
+
             // Update ship
             ship.Update(gameTime);
 
+            // Handle collision between ship and space station
+            if (CollisionHelper.Collides(ship.Bounds, station.Bounds)) {
+                collisionSound.Play();
+
+                float radius = ship.SIZE / 2;
+                Vector2 collisionPoint = new Vector2(MathHelper.Clamp(ship.Bounds.Center.X, station.Bounds.Left, station.Bounds.Right),
+                                                     MathHelper.Clamp(ship.Bounds.Center.Y, station.Bounds.Top, station.Bounds.Bottom));
+                if (collisionPoint.X == station.Bounds.Left) {
+                    // Left
+                    ship.ShipVelocity.X = 0;
+                    ship.Position.X = station.Bounds.Left - radius;
+                } else if (collisionPoint.X == station.Bounds.Right) {
+                    // Right
+                    ship.ShipVelocity.X = 0;
+                    ship.Position.X = station.Bounds.Right + radius;
+                } else if (collisionPoint.Y == station.Bounds.Top) {
+                    // Top
+                    ship.ShipVelocity.Y = 0;
+                    ship.Position.Y = station.Bounds.Top - radius;
+                } else if (collisionPoint.Y == station.Bounds.Bottom) {
+                    // Bottom
+                    ship.ShipVelocity.Y = 0;
+                    ship.Position.Y = station.Bounds.Bottom + radius;
+                }
+            }
+
             // Update projectile positions
             foreach (var p in projectiles) p.Update(gameTime);
-
-
-            // Update asteroids
-            for (int i = 0; i < asteroids.Length; i++) {
-                asteroids[i].Update(gameTime);
-
-                // Collision between two asteroids
-                for (int j = i + 1; j < asteroids.Length; j++) {
-                    if (CollisionHelper.handleElasticCollision(asteroids[i], asteroids[j])) {
-                        collisionSound.Play();
-                    }
-                }
-
-                // Collision between an asteroid and a ship
-                if(CollisionHelper.handleElasticCollision(asteroids[i], ship)) {
-                    collisionSound.Play();
-                }
-
-                // Collision between an asteroid and a projectile
-                for (int j = 0; j < projectiles.Count; j++) {
-                    if (CollisionHelper.Collides(asteroids[i].Bounds, projectiles[j].Bounds)) {
-                        // Particle
-                        explosionParticles.AddExplosion(asteroids[i].Bounds.Center);
-                        items.Add(Item.Create(Content, asteroids[i].Bounds.Center,
-                                        new float[] { 0.1f, 0.05f, 0.05f, 0.2f, 0.25f },
-                                        new int[] { 20, 10, 10, 20, 5 }));
-
-                        asteroids[i].Respawn();
-                        projectiles.RemoveAt(j);
-                    }
-                }
-            }
-
-            // Collision between the player and an item
-            for (int i = 0; i < items.Count; i++) {
-                if (CollisionHelper.Collides(items[i].Bounds, ship.Bounds)) {
-                    items[i].Add(game.Player);
-                    items.RemoveAt(i);
-                }
-            }
 
             // Keep ship on the map
             var r = ship.SIZE / 2;
@@ -264,16 +265,8 @@ namespace Starforged {
             transform = Matrix.CreateTranslation(offset.X, offset.Y, 0);
             spriteBatch.Begin(transformMatrix: transform);
 
-            // Add transformation to particles
-            explosionParticles.TransformMatrix = transform;
-
-            // Draw items
-            foreach (var i in items) i.Draw(gameTime, spriteBatch);
-
-            // Draw asteroids
-            foreach (var asteroid in asteroids) {
-                asteroid.Draw(gameTime, spriteBatch);
-            }
+            // Draw space station
+            station.Draw(gameTime, spriteBatch);
 
             // Draw ship
             ship.Draw(gameTime, spriteBatch);
@@ -293,9 +286,17 @@ namespace Starforged {
             var dampersStatus = ship.InertiaDampers ? "On" : "Off";
             var dampersColor = ship.InertiaDampers ? Color.LimeGreen : Color.Red;
             var dampersPos = new Vector2(10, game.GraphicsDevice.Viewport.Height - textFont.LineSpacing);
-            spriteBatch.DrawString(textFont, dampersText, dampersPos, Color.White, 0f, new Vector2(0,0), dampersScale, SpriteEffects.None, 0);
+            spriteBatch.DrawString(textFont, dampersText, dampersPos, Color.White, 0f, new Vector2(0, 0), dampersScale, SpriteEffects.None, 0);
             spriteBatch.DrawString(textFont, dampersStatus, dampersPos + new Vector2(textFont.MeasureString(dampersText).X * dampersScale, 0), dampersColor, 0f, new Vector2(0, 0), dampersScale, SpriteEffects.None, 0);
 
+            // Draw station info text
+            if (CollisionHelper.Collides(ship.Bounds, station.Vicinity)) {
+                var stationScale = 1f;
+                var stationText = "Press E to enter the shop";
+                var stationTextSize = textFont.MeasureString(stationText);
+                var stationPos = new Vector2(game.GraphicsDevice.Viewport.Width / 2, game.GraphicsDevice.Viewport.Height - stationTextSize.Y - 10);
+                spriteBatch.DrawString(textFont, stationText, stationPos, Color.White, 0f, stationTextSize / 2, stationScale, SpriteEffects.None, 0);
+            }
 
             // Draw HUD
             hud.Draw(gameTime, spriteBatch);
@@ -303,8 +304,13 @@ namespace Starforged {
             drawMinimap(spriteBatch, playerPos);
 
             // Draw map
-            if(showMap) {
+            if (showMap) {
                 drawMap(gameTime, spriteBatch);
+            }
+
+            // Draw shop overlay
+            if (showShop) {
+                shop.Draw(gameTime, spriteBatch);
             }
 
 
@@ -333,12 +339,12 @@ namespace Starforged {
             else transitionTimeElapsed += (float)gameTime.ElapsedGameTime.TotalSeconds;
         }
 
-        private void drawMinimap (SpriteBatch spriteBatch, Vector2 viewportCenter) {
+        private void drawMinimap(SpriteBatch spriteBatch, Vector2 viewportCenter) {
             float mapScale;
             if (Width >= Height) {
-                mapScale = 1/7f * Starforged.gDevice.Viewport.Width / Width;
+                mapScale = 1 / 7f * Starforged.gDevice.Viewport.Width / Width;
             } else {
-                mapScale = 1/4f * Starforged.gDevice.Viewport.Height / Height;
+                mapScale = 1 / 4f * Starforged.gDevice.Viewport.Height / Height;
             }
             int mapWidth = (int)(mapScale * Width);
             int mapHeight = (int)(mapScale * Height);
@@ -346,8 +352,8 @@ namespace Starforged {
             // Draw map text
             var mapTextScale = 0.6f;
             var mapText = "Press M to open map";
-            var mapTextPos = new Vector2(Starforged.gDevice.Viewport.Width - mapWidth - textFont.MeasureString(mapText).X*mapTextScale,
-                                         game.GraphicsDevice.Viewport.Height - textFont.LineSpacing*mapTextScale - 2);
+            var mapTextPos = new Vector2(Starforged.gDevice.Viewport.Width - mapWidth - textFont.MeasureString(mapText).X * mapTextScale,
+                                         game.GraphicsDevice.Viewport.Height - textFont.LineSpacing * mapTextScale - 2);
             spriteBatch.DrawString(textFont, "Press M to open map", mapTextPos, Color.White, 0f, new Vector2(0, 0), mapTextScale, SpriteEffects.None, 0);
 
             // Draw map background
@@ -358,8 +364,8 @@ namespace Starforged {
                 spriteBatch.Draw(viewportRectangle,
                                 new Rectangle(Starforged.gDevice.Viewport.Width - mapWidth + i,
                                               Starforged.gDevice.Viewport.Height - mapHeight + i,
-                                              mapWidth - 2*i,
-                                              mapHeight - 2*i),
+                                              mapWidth - 2 * i,
+                                              mapHeight - 2 * i),
                                 new Rectangle(0, 0, viewportRectangle.Width, viewportRectangle.Height),
                                 Color.DarkGray);
             }
@@ -382,10 +388,10 @@ namespace Starforged {
             spriteBatch.Draw(playerIcon,
                              new Vector2((int)(Starforged.gDevice.Viewport.Width - mapWidth + ship.Position.X * mapScale),
                                          (int)(Starforged.gDevice.Viewport.Height - mapHeight + ship.Position.Y * mapScale)),
-                             new Rectangle(0,0, playerIcon.Width, playerIcon.Height),
+                             new Rectangle(0, 0, playerIcon.Width, playerIcon.Height),
                              Color.White,
                              ship.Angle,
-                             new Vector2(playerIcon.Width/2,playerIcon.Height/2),
+                             new Vector2(playerIcon.Width / 2, playerIcon.Height / 2),
                              1f,
                              SpriteEffects.None,
                              1);
@@ -393,7 +399,7 @@ namespace Starforged {
         }
 
 
-        private void drawMap (GameTime gameTime, SpriteBatch spriteBatch) {
+        private void drawMap(GameTime gameTime, SpriteBatch spriteBatch) {
 
             // Draw map background
             mapBackground.Draw(spriteBatch);
@@ -403,8 +409,8 @@ namespace Starforged {
                 spriteBatch.Draw(viewportRectangle,
                                 new Rectangle(mapPadding,
                                               mapPadding,
-                                              Starforged.gDevice.Viewport.Width - 2*mapPadding,
-                                              Starforged.gDevice.Viewport.Height - 2*mapPadding),
+                                              Starforged.gDevice.Viewport.Width - 2 * mapPadding,
+                                              Starforged.gDevice.Viewport.Height - 2 * mapPadding),
                                 Color.DarkGray);
             }
 

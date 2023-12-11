@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.IO;
+using System.Runtime.Serialization;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace Starforged
@@ -19,7 +21,7 @@ namespace Starforged
         /// <summary>
         /// The galaxy map
         /// </summary>
-        public Map Map;
+        public ImportedMap Map;
 
         /// <summary>
         /// Graphics device
@@ -63,7 +65,7 @@ namespace Starforged
             if (File.Exists(SaveGamePath)) {
                 Load();
             } else {
-                Player = new Player(100f, 150, 200, 250, 300);
+                Player = new Player();
                 Save();
             }
 
@@ -83,7 +85,7 @@ namespace Starforged
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // Load map
-            Map = Content.Load<Map>("map");
+            Map = Content.Load<ImportedMap>("map");
 
         }
 
@@ -164,17 +166,23 @@ namespace Starforged
         }
 
         public void Save() {
-            TextWriter writer = new StreamWriter(SaveGamePath);
-            XmlSerializer serializer = new XmlSerializer(typeof(Player));
-            serializer.Serialize(writer, Player);
-            writer.Close();
+            DataContractSerializer serializer = new DataContractSerializer(typeof(Player));
+            using (var sw = new StringWriter()) {
+                using (var writer = new XmlTextWriter(SaveGamePath, null)) {
+                    writer.Formatting = Formatting.Indented;
+                    serializer.WriteObject(writer, Player);
+                }
+            }
         }
 
         public void Load() {
-            TextReader reader = new StreamReader(SaveGamePath);
-            XmlSerializer serializer = new XmlSerializer(typeof(Player));
-            Player = (Player)serializer.Deserialize(reader);
-            reader.Close();
+            DataContractSerializer serializer = new DataContractSerializer(typeof(Player));
+            using (FileStream fs = new FileStream(SaveGamePath, FileMode.Open)) {
+                XmlDictionaryReader reader = XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
+                Player = (Player)serializer.ReadObject(reader);
+                reader.Close();
+                fs.Close();
+            }
 
         }
     }

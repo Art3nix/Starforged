@@ -26,8 +26,8 @@ namespace Starforged {
 
 
             // Init values
-            MAXSPEED = 150;
-            MAXANGSPEED = 10;
+            MaxSpeed = 150;
+            MaxAngSpeed = 10;
             SIZE = 48;
             Health = 80;
             MaxHealth = 80;
@@ -52,7 +52,7 @@ namespace Starforged {
             }
 
             //Move in the correct direction
-            Position += ShipVelocity * MAXSPEED * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Position += ShipVelocity * MaxSpeed * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
 
             // Return ship back to the screen

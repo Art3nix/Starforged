@@ -48,7 +48,7 @@ namespace Starforged {
         public void LoadContent(ContentManager content) {
             texture = content.Load<Texture2D>(textureName);
             size = texture.Width;
-            bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
+            Bounds = new BoundingCircle(Position + new Vector2(size / 2, size / 2), size / 2);
         }
 
         /// <summary>

@@ -13,9 +13,11 @@ namespace Starforged {
         protected Texture2D texture;
 
         // Ship constants
-        public int MAXSPEED;
-        public int MAXANGSPEED;
         public int SIZE;
+
+        // Ship parameters
+        public int MaxSpeed;
+        public int MaxAngSpeed;
 
         /// <summary>
         /// Flying direction of the ship
@@ -46,6 +48,11 @@ namespace Starforged {
         /// Damage of the ship's projectiles
         /// </summary>
         public int Damage;
+
+        /// <summary>
+        /// Speed of the ship's projectiles
+        /// </summary>
+        public int ProjectileSpeed;
 
         /// <summary>
         /// Sound of the engines
