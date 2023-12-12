@@ -418,10 +418,9 @@ namespace Starforged {
             if (!clearedLevel && (enemiesLeft == 0 || ship.Health <= 0)) {
                 clearedLevel = true;
                 if (ship.Health > 0) {
-                    if (game.Map.CurrentLocation == game.Map.PlanetCount) {
+                    if (game.Map.CurrentLocation == game.Map.PlanetCount - 1) {
                         // Final level
                         endText = "Victory";
-                        game.ChangeScene(new TitleScene(game));
                     } else {
                         endText = "Level cleared";
                         if (game.Map.CurrentLocation == game.Player.Level) {

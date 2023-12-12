@@ -121,6 +121,10 @@ namespace Starforged {
                 }
             }
 
+            if (game.CurrScene.State == SceneState.TransitionOn) {
+                changingScene = false;
+            }
+
             priorMouse = mouse;
         }
 
