@@ -188,10 +188,11 @@ namespace Starforged {
                     if (CollisionHelper.Collides(asteroids[i].Bounds, projectiles[j].Bounds)) {
                         // Particle
                         explosionParticles.AddExplosion(asteroids[i].Bounds.Center);
-                        items.Add(Item.Create(Content, asteroids[i].Bounds.Center,
-                                        new float[] { 0.1f, 0.05f, 0.05f, 0.2f, 0.25f },
-                                        new int[] { 20, 10, 10, 20, 5 }));
-
+                        Item item = Item.Create(Content, asteroids[i].Bounds.Center,
+                                        new float[] { 0.05f, 0.01f, 0.01f, 0.1f, 0.05f },
+                                        new int[] { 5, 2, 2, 5, 1 });
+                        if (item != null)
+                            items.Add(item);
                         asteroids[i].Respawn();
                         projectiles.RemoveAt(j);
                     }

@@ -21,6 +21,9 @@ namespace Starforged {
         // Ships
         private PlayerShip ship;
 
+        // Asteroids
+        private Asteroid[] asteroids;
+
         // Enemies
         private EnemyShip[] enemies;
         private int enemiesLeft;
@@ -68,7 +71,7 @@ namespace Starforged {
         /// <summary>
         /// Constructs the game
         /// </summary>
-        public EnemyShipScene(Starforged g, int enemyCount) : base(g) {
+        public EnemyShipScene(Starforged g, int enemyCount, int asteroidCount = 0) : base(g) {
             WindowWidth = 1800;
             WindowHeight = 1000;
 
@@ -86,6 +89,13 @@ namespace Starforged {
 
             // Initialize background
             background = new TiledBackground(Width, Height);
+            
+            // Initialize asteroids
+            Random r = new Random();
+            asteroids = new Asteroid[40];
+            for (var i = 0; i < asteroids.Length; i++) {
+                asteroids[i] = new Asteroid(game, r.Next(4), r.Next(3));
+            }
 
             // Initialize particles
             explosionParticles = new ExplosionParticleSystem(game, 1500);
@@ -152,6 +162,9 @@ namespace Starforged {
             // Load font
             textFont = Content.Load<SpriteFont>("millennia");
 
+            // Load asteroids
+            foreach (var asteroid in asteroids) asteroid.LoadContent(Content);
+
             // Load sfx
             collisionSound = Content.Load<SoundEffect>("music/sfx/collision");
 
@@ -194,6 +207,40 @@ namespace Starforged {
             foreach (var p in projectiles) p.Update(gameTime);
             foreach (var p in enemyProjectiles) p.Update(gameTime);
 
+            // Update asteroids
+            for (int i = 0; i < asteroids.Length; i++) {
+                asteroids[i].Update(gameTime);
+
+                // Collision between two asteroids
+                for (int j = i + 1; j < asteroids.Length; j++) {
+                    if (CollisionHelper.handleElasticCollision(asteroids[i], asteroids[j])) {
+                        collisionSound.Play();
+                    }
+                }
+
+                // Collision between an asteroid and a ship
+                if (CollisionHelper.handleElasticCollision(asteroids[i], ship)) {
+                    collisionSound.Play();
+                }
+
+                foreach (var enemy in enemies)
+                    CollisionHelper.handleElasticCollision(asteroids[i], ship);
+
+                // Collision between an asteroid and a projectile
+                for (int j = 0; j < projectiles.Count; j++) {
+                    if (CollisionHelper.Collides(asteroids[i].Bounds, projectiles[j].Bounds)) {
+                        // Particle
+                        explosionParticles.AddExplosion(asteroids[i].Bounds.Center);
+                        Item item = Item.Create(Content, asteroids[i].Bounds.Center,
+                                        new float[] { 0.05f, 0.01f, 0.01f, 0.1f, 0.05f },
+                                        new int[] { 5, 2, 2, 5, 1 });
+                        if (item != null)
+                            items.Add(item);
+                        asteroids[i].Despawn();
+                        projectiles.RemoveAt(j);
+                    }
+                }
+            }
 
             // Update enemies
             for (int i = 0; i < enemies.Length; i++) {
@@ -233,10 +280,11 @@ namespace Starforged {
                         enemies[i].Health -= projectiles[j].Damage;
                         if (enemies[i].Health <= 0) {
                             explosionParticles.AddExplosion(enemies[i].Bounds.Center);
-                            items.Add(Item.Create(Content, enemies[i].Bounds.Center,
+                            Item item = Item.Create(Content, enemies[i].Bounds.Center,
                                             new float[] { 0.15f, 0.1f, 0.15f, 0.2f, 0.25f },
-                                            new int[] { 20, 10, 20, 20, 25 }));
-
+                                            new int[] { 20, 10, 20, 20, 25 });
+                            if (item != null)
+                                items.Add(item);
                             enemies[i].Despawn();
                             enemiesLeft--;
                         }
@@ -348,6 +396,11 @@ namespace Starforged {
 
             // Draw items
             foreach (var i in items) i.Draw(gameTime, spriteBatch);
+
+            // Draw asteroids
+            foreach (var asteroid in asteroids) {
+                asteroid.Draw(gameTime, spriteBatch);
+            }
 
             // Draw enemies
             foreach (var enemy in enemies) {

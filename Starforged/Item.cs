@@ -137,6 +137,8 @@ namespace Starforged {
                 am = r.Next(1, maxAmounts[(int)ItemType.Ammo - 1]);
                 tName = "ammo";
 
+            } else {
+                return null;
             }
 
             return new Item(content, type, am, pos, tName);

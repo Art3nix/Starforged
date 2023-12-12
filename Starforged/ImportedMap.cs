@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System;
 
 namespace Starforged {
     public class ImportedMap : Map {
@@ -66,11 +65,11 @@ namespace Starforged {
 
             (string, Scene)[] planetInfo = {
                             ("Base", new BaseScene(game)),
-                            ("Level 1", new EnemyShipScene(game, 5)),
-                            ("Level 2", new EnemyShipScene(game, 10)),
-                            ("Level 3", new EnemyShipScene(game, 15)),
-                            ("Level 4", new EnemyShipScene(game, 20)),
-                            ("Level 5", new EnemyShipScene(game, 25)),
+                            ("Level 1", new EnemyShipScene(game, 5, 10)),
+                            ("Level 2", new EnemyShipScene(game, 10, 10)),
+                            ("Level 3", new EnemyShipScene(game, 15, 20)),
+                            ("Level 4", new EnemyShipScene(game, 20, 30)),
+                            ("Level 5", new EnemyShipScene(game, 25, 40)),
                             };
 
             PlanetCount = Tiles.Length;

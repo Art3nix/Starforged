@@ -183,5 +183,11 @@ namespace Starforged {
 
         }
 
+        public void Despawn() {
+
+            Position = new Vector2(-1000, -1000);
+            Velocity = new Vector2(0, 0);
+        }
+
     }
 }
