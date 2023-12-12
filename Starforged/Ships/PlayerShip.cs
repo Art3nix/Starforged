@@ -31,8 +31,8 @@ namespace Starforged {
         private int SPEED_INC = 40;
         private int LIN_ACC_INC = 25;
         private int ANG_SPEED_INC = 2;
-        private float ANG_ACC_INC = 0.2f;
-        private int DAMAGE_INC = 10;
+        private float ANG_ACC_INC = 0.1f;
+        private int DAMAGE_INC = 5;
         private int PROJ_SPEED_INC = 100;
 
         // Ship parameters
@@ -191,9 +191,6 @@ namespace Starforged {
                 } else if (angVelocity < 0) {
                     angAcc += AngAcceleration;
                 }
-                if (angVelocity > 0.1f) {
-                    fuelConsumed += ANG_FCONSUMPTION * time;
-                }
 
             }
 
@@ -210,11 +207,6 @@ namespace Starforged {
 
             if (InertiaDampers && ShipVelocity != Vector2.Zero) {
                 // Slow down ship if dampers are on
-                if (Vector2.Distance(ShipVelocity, Vector2.Zero) > Math.Sqrt(2)) {
-                    // do not consume fuel if ship almost not moving
-                    fuelConsumed += LIN_FCONSUMPTION * time;
-                    
-                }
                 
                 
                 if (kbState.IsKeyDown(Keys.Down) || kbState.IsKeyDown(Keys.Up)) {
@@ -226,6 +218,7 @@ namespace Starforged {
                 } else {
                     // no user input means slow ship in opposite direction
                     acc += (-Vector2.Normalize(ShipVelocity)) * LinAcceleration;
+
                 }
             }
 

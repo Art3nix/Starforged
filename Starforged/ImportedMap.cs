@@ -54,6 +54,11 @@ namespace Starforged {
         public int CurrentLocation = 0;
 
         private SpriteFont planetFont;
+        private bool showWarning = false;
+        private bool planetHover = false;
+        private bool changingScene = false;
+
+        private MouseState priorMouse;
 
 
         public void Initialize(Starforged game, int offsetX = 0, int offsetY = 0) {
@@ -83,6 +88,8 @@ namespace Starforged {
                 }
             }
 
+            priorMouse = Mouse.GetState();
+
         }
 
         public void LoadContent(ContentManager content) {
@@ -95,32 +102,64 @@ namespace Starforged {
             MouseState mouse = Mouse.GetState();
             for (int i = 0; i < PlanetCount && i <= game.Player.Level; i++) {
                 if (Planets[i].Area.Contains(mouse.Position)) {
-                    if (mouse.LeftButton == ButtonState.Pressed) {
+                    if (mouse.LeftButton == ButtonState.Pressed &&
+                        priorMouse.LeftButton != ButtonState.Pressed) {
+                        if (i != 0) {
+                            if (game.Player.JumpFuel < 5)
+                                // Check for jump fuel
+                                break;
+
+                            game.Player.JumpFuel -= 5;
+                        }
+
                         // enter the map
                         game.ChangeScene(Planets[i].LevelScene);
+                        changingScene = true;
                         CurrentLocation = i;
                         break;
                     }
                 }
             }
+
+            priorMouse = mouse;
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Starforged game) {
 
             MouseState mouse = Mouse.GetState();
+            planetHover = false;
+
             for (int i = 0; i < PlanetCount && i <= game.Player.Level; i++) {
                 // Draw the planet
                 spriteBatch.Draw(TilesetTexture, new Vector2(Planets[i].Area.X, Planets[i].Area.Y), Tiles[i], Color.White);
 
+
                 if (Planets[i].Area.Contains(mouse.Position)) {
+                    planetHover = true;
+
                     //on hover show name
                     var planetScale = 0.8f;
                     var planetText = Planets[i].Name;
                     var planetPos = new Vector2(Planets[i].Area.Center.X, Planets[i].Area.Bottom + 10);
                     spriteBatch.DrawString(planetFont, planetText, planetPos, Color.White, 0f, planetFont.MeasureString(planetText) / 2, planetScale, SpriteEffects.None, 0);
 
+                    if (mouse.LeftButton == ButtonState.Pressed) {
+                        if (i != 0 && game.Player.JumpFuel < 5) {
+                            // Check for jump fuel
+                            showWarning = true;
+                        }
+                    }
                 }
+
+                if (showWarning && !changingScene)
+                    spriteBatch.DrawString(planetFont, "Required 5 Jump Fuel", new Vector2(mouse.X + 15, mouse.Y), Color.Red, 0f, new Vector2(0, 0), 0.6f, SpriteEffects.None, 0);
+
+
             }
+
+            if (!planetHover) showWarning = false;
+
+            priorMouse = mouse;
         }
     }
 }

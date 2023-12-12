@@ -83,11 +83,11 @@ namespace Starforged {
             buttons[1] = new ShopButton(creditsIcon, 5, ItemType.JumpFuel, ItemType.Credits, content, game, (AmountButton)buttons[4]);
             buttons[2] = new ShopButton(creditsIcon, 10, ItemType.Components, ItemType.Credits, content, game, (AmountButton)buttons[4]);
             buttons[3] = new ShopButton(creditsIcon, 2, ItemType.Ammo, ItemType.Credits, content, game, (AmountButton)buttons[4]);
-            buttons[5] = new UpgradeButton(componentsIcon, 10, UpgradeType.Health, ItemType.Components, content, game);
-            buttons[6] = new UpgradeButton(componentsIcon, 10, UpgradeType.Speed, ItemType.Components, content, game);
-            buttons[7] = new UpgradeButton(componentsIcon, 10, UpgradeType.Agility, ItemType.Components, content, game);
-            buttons[8] = new UpgradeButton(componentsIcon, 10, UpgradeType.Damage, ItemType.Components, content, game);
-            buttons[9] = new UpgradeButton(componentsIcon, 10, UpgradeType.ProjSpeed, ItemType.Components, content, game);
+            buttons[5] = new UpgradeButton(componentsIcon, 10 * (game.Player.ShipUpgradeLevels[UpgradeType.Health] + 1), UpgradeType.Health, ItemType.Components, content, game);
+            buttons[6] = new UpgradeButton(componentsIcon, 10 * (game.Player.ShipUpgradeLevels[UpgradeType.Speed] + 1), UpgradeType.Speed, ItemType.Components, content, game);
+            buttons[7] = new UpgradeButton(componentsIcon, 10 * (game.Player.ShipUpgradeLevels[UpgradeType.Agility] + 1), UpgradeType.Agility, ItemType.Components, content, game);
+            buttons[8] = new UpgradeButton(componentsIcon, 10 * (game.Player.ShipUpgradeLevels[UpgradeType.Damage] + 1), UpgradeType.Damage, ItemType.Components, content, game);
+            buttons[9] = new UpgradeButton(componentsIcon, 10 * (game.Player.ShipUpgradeLevels[UpgradeType.ProjSpeed] + 1), UpgradeType.ProjSpeed, ItemType.Components, content, game);
 
             // Load font
             titleFont = content.Load<SpriteFont>("title");

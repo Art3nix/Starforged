@@ -93,6 +93,8 @@ namespace Starforged {
                 }
             }
 
+            
+
             priorMouse = Mouse.GetState();
 
         }
