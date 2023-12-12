@@ -40,6 +40,7 @@ namespace Starforged {
         private Hud hud;
         private Texture2D viewportRectangle;
         private Texture2D playerIcon;
+        private Texture2D circle;
         private Texture2D red;
         private Texture2D green;
 
@@ -140,6 +141,7 @@ namespace Starforged {
             hud.LoadContent(Content);
             viewportRectangle = Content.Load<Texture2D>("rectangle");
             playerIcon = Content.Load<Texture2D>("player");
+            circle = Content.Load<Texture2D>("utils/circle");
             red = Content.Load<Texture2D>("utils/red");
             green = Content.Load<Texture2D>("utils/green");
 
@@ -523,6 +525,36 @@ namespace Starforged {
                              SpriteEffects.None,
                              1);
 
+            // Draw enemies on minimap
+            foreach (var enemy in enemies) {
+                // Skip despawned enemies
+                if (enemy.Health <= 0 || !enemy.EnteredBounds) continue;
+
+                spriteBatch.Draw(circle,
+                                 new Vector2((int)(Starforged.gDevice.Viewport.Width - mapWidth + enemy.Position.X * mapScale),
+                                             (int)(Starforged.gDevice.Viewport.Height - mapHeight + enemy.Position.Y * mapScale)),
+                                 new Rectangle(0, 0, circle.Width, circle.Height),
+                                 Color.Red,
+                                 0f,
+                                 new Vector2(circle.Width / 2, circle.Height / 2),
+                                 1f,
+                                 SpriteEffects.None,
+                                 1);
+            }
+
+            // Draw items on minimap
+            foreach (var item in items) {
+                spriteBatch.Draw(circle,
+                                 new Vector2((int)(Starforged.gDevice.Viewport.Width - mapWidth + item.Position.X * mapScale),
+                                             (int)(Starforged.gDevice.Viewport.Height - mapHeight + item.Position.Y * mapScale)),
+                                 new Rectangle(0, 0, circle.Width, circle.Height),
+                                 Color.Green,
+                                 0f,
+                                 new Vector2(circle.Width / 2, circle.Height / 2),
+                                 1f,
+                                 SpriteEffects.None,
+                                 1);
+            }
         }
 
         private void drawHealth(Ship ship, SpriteBatch spriteBatch) {
